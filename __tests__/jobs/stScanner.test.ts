@@ -57,15 +57,13 @@ describe('stScanner Job', () => {
       { trend: 'UP', value: 240 },
     ]);
     jest.spyOn(configStore, 'getInvestmentAmount').mockReturnValue(10000);
-    jest
-      .spyOn(holdingStore, 'get')
-      .mockReturnValue({
-        totalQuantity: 0,
-        averagePrice: 0,
-        totalInvestment: 0,
-        lastSignal: 'NONE',
-        trades: [],
-      });
+    jest.spyOn(holdingStore, 'get').mockReturnValue({
+      totalQuantity: 0,
+      averagePrice: 0,
+      totalInvestment: 0,
+      lastSignal: 'NONE',
+      trades: [],
+    });
 
     const addBuySpy = jest.spyOn(holdingStore, 'addBuy').mockImplementation();
 
@@ -86,15 +84,13 @@ describe('stScanner Job', () => {
       { trend: 'UP', value: 240 },
       { trend: 'DOWN', value: 270 },
     ]);
-    jest
-      .spyOn(holdingStore, 'get')
-      .mockReturnValue({
-        totalQuantity: 40,
-        averagePrice: 250,
-        totalInvestment: 10000,
-        lastSignal: 'BUY',
-        trades: [],
-      });
+    jest.spyOn(holdingStore, 'get').mockReturnValue({
+      totalQuantity: 40,
+      averagePrice: 250,
+      totalInvestment: 10000,
+      lastSignal: 'BUY',
+      trades: [],
+    });
 
     const clearSpy = jest.spyOn(holdingStore, 'clear').mockImplementation();
 
@@ -115,15 +111,13 @@ describe('stScanner Job', () => {
       { trend: 'UP', value: 240 },
       { trend: 'DOWN', value: 260 },
     ]);
-    jest
-      .spyOn(holdingStore, 'get')
-      .mockReturnValue({
-        totalQuantity: 40,
-        averagePrice: 250,
-        totalInvestment: 10000,
-        lastSignal: 'BUY',
-        trades: [],
-      });
+    jest.spyOn(holdingStore, 'get').mockReturnValue({
+      totalQuantity: 40,
+      averagePrice: 250,
+      totalInvestment: 10000,
+      lastSignal: 'BUY',
+      trades: [],
+    });
 
     await runStScanner();
 
