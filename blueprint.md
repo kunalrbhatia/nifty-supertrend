@@ -23,7 +23,7 @@ The strategy operates on **Daily closed candles** of `NIFTYBEES`. By running the
 
 | Concern | Choice |
 |---|---|
-| Runtime | Node.js >= 20 LTS |
+| Runtime | Node.js >= 22 LTS |
 | Language | TypeScript (strict), ES modules (`import`/`export`) |
 | Package manager | pnpm |
 | Framework | Express (Health check endpoint only) |
