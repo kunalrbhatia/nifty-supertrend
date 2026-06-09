@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: [CI]
     types: [completed]
-    branches: [main]
+    branches: [master]
 
 jobs:
   deploy:
@@ -37,7 +37,7 @@ jobs:
           key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
             cd ~/st-etf-algo
-            git pull origin main
+            git pull origin master
             pnpm install --frozen-lockfile
             pnpm build
             pm2 restart st-etf-algo
