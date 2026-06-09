@@ -36,6 +36,9 @@ describe('TimeframeCommand', () => {
   it('should handle invalid timeframe', async () => {
     mockCtx.message.text = '/timeframe abc';
     await timeframeHandler(mockCtx);
-    expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('Invalid timeframe'), expect.any(Object));
+    expect(mockCtx.reply).toHaveBeenCalledWith(
+      expect.stringContaining('Invalid timeframe'),
+      expect.any(Object)
+    );
   });
 });
