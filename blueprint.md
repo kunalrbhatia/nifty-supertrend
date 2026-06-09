@@ -37,6 +37,9 @@ The strategy operates on **Daily closed candles** of `NIFTYBEES`. By running the
 | Testing | Jest + ts-jest, 100% coverage enforced |
 | Linting | ESLint + Prettier |
 | Pre-commit | Husky + lint-staged (The "Pre-Tool") |
+| Commits | Conventional Commits (Commitizen) - No Emojis |
+| Branching | Conventional Branch Naming (`type/description`) |
+| PR Titles | Conventional PR Titles (e.g., `feat: update config`) |
 | PR Validation | GitHub CLI (`gh pr checks`) (The "Post-Tool") |
 | Process manager | PM2 (Oracle Cloud Free Tier) |
 | Env | `.env` via `dotenv` |
