@@ -31,7 +31,9 @@ describe('stScanner Job', () => {
     jest.spyOn(holidayCheck, 'isTradingDay').mockResolvedValue(true);
     jest.spyOn(marketData, 'getDailyCandles').mockResolvedValue([]);
     await runStScanner();
-    expect(logger.error).toHaveBeenCalledWith('Insufficient candle data for Nifty 50 ST calculation');
+    expect(logger.error).toHaveBeenCalledWith(
+      'Insufficient candle data for Nifty 50 ST calculation'
+    );
   });
 
   it('should execute BUY signal correctly', async () => {
@@ -52,18 +54,28 @@ describe('stScanner Job', () => {
     });
     jest.spyOn(supertrend, 'calculateSuperTrend').mockReturnValue([
       { trend: 'DOWN', value: 260 },
-      { trend: 'UP', value: 240 }
+      { trend: 'UP', value: 240 },
     ]);
     jest.spyOn(configStore, 'getInvestmentAmount').mockReturnValue(10000);
-    jest.spyOn(holdingStore, 'get').mockReturnValue({ totalQuantity: 0, averagePrice: 0, totalInvestment: 0, lastSignal: 'NONE', trades: [] });
-    
+    jest
+      .spyOn(holdingStore, 'get')
+      .mockReturnValue({
+        totalQuantity: 0,
+        averagePrice: 0,
+        totalInvestment: 0,
+        lastSignal: 'NONE',
+        trades: [],
+      });
+
     const addBuySpy = jest.spyOn(holdingStore, 'addBuy').mockImplementation();
 
     await runStScanner();
 
     expect(orders.placeOrder).toHaveBeenCalledWith('BUY', 40);
     expect(addBuySpy).toHaveBeenCalledWith(40, 250);
-    expect(notifier.sendNotification).toHaveBeenCalledWith(expect.stringContaining('BUY SIGNAL (Nifty 50)'));
+    expect(notifier.sendNotification).toHaveBeenCalledWith(
+      expect.stringContaining('BUY SIGNAL (Nifty 50)')
+    );
   });
 
   it('should execute SELL signal (EXIT) correctly', async () => {
@@ -72,17 +84,27 @@ describe('stScanner Job', () => {
     jest.spyOn(marketData, 'getLtp').mockResolvedValue(260); // 4% profit over 250
     jest.spyOn(supertrend, 'calculateSuperTrend').mockReturnValue([
       { trend: 'UP', value: 240 },
-      { trend: 'DOWN', value: 270 }
+      { trend: 'DOWN', value: 270 },
     ]);
-    jest.spyOn(holdingStore, 'get').mockReturnValue({ totalQuantity: 40, averagePrice: 250, totalInvestment: 10000, lastSignal: 'BUY', trades: [] });
-    
+    jest
+      .spyOn(holdingStore, 'get')
+      .mockReturnValue({
+        totalQuantity: 40,
+        averagePrice: 250,
+        totalInvestment: 10000,
+        lastSignal: 'BUY',
+        trades: [],
+      });
+
     const clearSpy = jest.spyOn(holdingStore, 'clear').mockImplementation();
 
     await runStScanner();
 
     expect(orders.placeOrder).toHaveBeenCalledWith('SELL', 40);
     expect(clearSpy).toHaveBeenCalled();
-    expect(notifier.sendNotification).toHaveBeenCalledWith(expect.stringContaining('SELL SIGNAL (EXIT) - Nifty 50'));
+    expect(notifier.sendNotification).toHaveBeenCalledWith(
+      expect.stringContaining('SELL SIGNAL (EXIT) - Nifty 50')
+    );
   });
 
   it('should handle SELL signal (HOLD) correctly', async () => {
@@ -91,13 +113,23 @@ describe('stScanner Job', () => {
     jest.spyOn(marketData, 'getLtp').mockResolvedValue(251); // 0.4% profit < 1%
     jest.spyOn(supertrend, 'calculateSuperTrend').mockReturnValue([
       { trend: 'UP', value: 240 },
-      { trend: 'DOWN', value: 260 }
+      { trend: 'DOWN', value: 260 },
     ]);
-    jest.spyOn(holdingStore, 'get').mockReturnValue({ totalQuantity: 40, averagePrice: 250, totalInvestment: 10000, lastSignal: 'BUY', trades: [] });
+    jest
+      .spyOn(holdingStore, 'get')
+      .mockReturnValue({
+        totalQuantity: 40,
+        averagePrice: 250,
+        totalInvestment: 10000,
+        lastSignal: 'BUY',
+        trades: [],
+      });
 
     await runStScanner();
 
     expect(orders.placeOrder).not.toHaveBeenCalled();
-    expect(notifier.sendNotification).toHaveBeenCalledWith(expect.stringContaining('SELL SIGNAL (HOLD) - Nifty 50'));
+    expect(notifier.sendNotification).toHaveBeenCalledWith(
+      expect.stringContaining('SELL SIGNAL (HOLD) - Nifty 50')
+    );
   });
 });

@@ -35,7 +35,9 @@ export async function runStScanner(): Promise<void> {
     const prevST = stResults[stResults.length - 2];
     const currST = stResults[stResults.length - 1];
 
-    logger.info(`ST (Nifty 50) Status: Prev=${prevST.trend}, Curr=${currST.trend} | Bees LTP: ${beesLtp}`);
+    logger.info(
+      `ST (Nifty 50) Status: Prev=${prevST.trend}, Curr=${currST.trend} | Bees LTP: ${beesLtp}`
+    );
 
     // 4. Signal Detection
     const holdings = holdingStore.get();
@@ -51,7 +53,9 @@ export async function runStScanner(): Promise<void> {
         holdingStore.addBuy(qty, beesLtp);
 
         const newHoldings = holdingStore.get();
-        await sendNotification(`🟢 *BUY SIGNAL (Nifty 50)*\nAsset: NIFTYBEES\nPrice: ₹${beesLtp}\nQty: ${qty}\nNew Avg: ₹${newHoldings.averagePrice.toFixed(2)}\nTotal Qty: ${newHoldings.totalQuantity}`);
+        await sendNotification(
+          `🟢 *BUY SIGNAL (Nifty 50)*\nAsset: NIFTYBEES\nPrice: ₹${beesLtp}\nQty: ${qty}\nNew Avg: ₹${newHoldings.averagePrice.toFixed(2)}\nTotal Qty: ${newHoldings.totalQuantity}`
+        );
       }
     }
 
@@ -61,14 +65,22 @@ export async function runStScanner(): Promise<void> {
         const profitPct = ((beesLtp - holdings.averagePrice) / holdings.averagePrice) * 100;
 
         if (profitPct >= CONSTANTS.MIN_PROFIT_PERCENT) {
-          logger.info(`🔴 SELL SIGNAL (N50). Profit ${profitPct.toFixed(2)}% >= ${CONSTANTS.MIN_PROFIT_PERCENT}%. Squaring off.`);
+          logger.info(
+            `🔴 SELL SIGNAL (N50). Profit ${profitPct.toFixed(2)}% >= ${CONSTANTS.MIN_PROFIT_PERCENT}%. Squaring off.`
+          );
           await placeOrder('SELL', holdings.totalQuantity);
           holdingStore.clear();
 
-          await sendNotification(`🔴 *SELL SIGNAL (EXIT) - Nifty 50*\nAsset: NIFTYBEES\nPrice: ₹${beesLtp}\nAvg: ₹${holdings.averagePrice.toFixed(2)}\nP&L: +${profitPct.toFixed(2)}%\nSquare-off complete!`);
+          await sendNotification(
+            `🔴 *SELL SIGNAL (EXIT) - Nifty 50*\nAsset: NIFTYBEES\nPrice: ₹${beesLtp}\nAvg: ₹${holdings.averagePrice.toFixed(2)}\nP&L: +${profitPct.toFixed(2)}%\nSquare-off complete!`
+          );
         } else {
-          logger.info(`🟡 SELL SIGNAL (N50) but Profit ${profitPct.toFixed(2)}% < ${CONSTANTS.MIN_PROFIT_PERCENT}%. Holding position.`);
-          await sendNotification(`🟡 *SELL SIGNAL (HOLD) - Nifty 50*\nAsset: NIFTYBEES\nPrice: ₹${beesLtp}\nAvg: ₹${holdings.averagePrice.toFixed(2)}\nP&L: ${profitPct.toFixed(2)}%\nProfit < 1%, carrying forward.`);
+          logger.info(
+            `🟡 SELL SIGNAL (N50) but Profit ${profitPct.toFixed(2)}% < ${CONSTANTS.MIN_PROFIT_PERCENT}%. Holding position.`
+          );
+          await sendNotification(
+            `🟡 *SELL SIGNAL (HOLD) - Nifty 50*\nAsset: NIFTYBEES\nPrice: ₹${beesLtp}\nAvg: ₹${holdings.averagePrice.toFixed(2)}\nP&L: ${profitPct.toFixed(2)}%\nProfit < 1%, carrying forward.`
+          );
         }
       } else {
         logger.info('Nifty 50 ST turned RED but no active holdings to sell.');
@@ -76,7 +88,6 @@ export async function runStScanner(): Promise<void> {
     } else {
       logger.info(`Nifty 50 Trend remains ${currST.trend}. No action taken.`);
     }
-
   } catch (error: any) {
     logger.error(`Error in stScanner job: ${error.message}`);
     await sendNotification(`⚠️ *ST-ETF ERROR:* ${error.message}`);

@@ -1,7 +1,19 @@
 import { execSync } from 'child_process';
 
 const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
-const validPrefixes = ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'];
+const validPrefixes = [
+  'feat',
+  'fix',
+  'docs',
+  'style',
+  'refactor',
+  'perf',
+  'test',
+  'build',
+  'ci',
+  'chore',
+  'revert',
+];
 const branchRegex = new RegExp(`^(${validPrefixes.join('|')})\\/.*$`);
 
 if (branchName === 'master' || branchName === 'main') {

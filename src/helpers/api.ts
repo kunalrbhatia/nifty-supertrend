@@ -13,7 +13,7 @@ const api = axios.create({
 
 api.interceptors.request.use((req) => {
   const { jwtToken } = sessionStore.get();
-  
+
   // These headers are required for ALL requests including login
   req.headers['X-PrivateKey'] = config.API_KEY;
   req.headers['Content-Type'] = 'application/json';
@@ -23,12 +23,13 @@ api.interceptors.request.use((req) => {
   req.headers['X-ClientPublicIP'] = '106.193.147.98';
   req.headers['X-MACAddress'] = '00-B0-D0-63-C2-26';
   req.headers['X-UserType'] = 'USER';
-  req.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
+  req.headers['User-Agent'] =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
   if (jwtToken) {
     req.headers['Authorization'] = `Bearer ${jwtToken}`;
   }
-  
+
   return req;
 });
 
@@ -42,7 +43,9 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    logger.error(`HTTP Error details: config URL=${error.config?.url}, data=${error.config?.data}, response=${error.response?.status} ${error.response?.statusText}`);
+    logger.error(
+      `HTTP Error details: config URL=${error.config?.url}, data=${error.config?.data}, response=${error.response?.status} ${error.response?.statusText}`
+    );
     if (error.response && error.response.data) {
       logger.error(`HTTP Error Data: ${JSON.stringify(error.response.data)}`);
     } else {

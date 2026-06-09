@@ -15,9 +15,10 @@ export async function statusHandler(ctx: Context) {
     const stResults = calculateSuperTrend(n50Candles);
     const latestST = stResults[stResults.length - 1];
 
-    const pnl = holdings.totalQuantity > 0
-      ? ((beesLtp - holdings.averagePrice) / holdings.averagePrice * 100).toFixed(2)
-      : '0.00';
+    const pnl =
+      holdings.totalQuantity > 0
+        ? (((beesLtp - holdings.averagePrice) / holdings.averagePrice) * 100).toFixed(2)
+        : '0.00';
 
     const message = `📊 *Strategy Status* (${isPaper ? 'PAPER' : 'LIVE'})
 --------------------------

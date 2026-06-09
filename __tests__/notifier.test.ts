@@ -10,7 +10,10 @@ describe('Notifier', () => {
   it('should send notification via axios', async () => {
     mockedAxios.post.mockResolvedValue({ data: { ok: true } });
     await sendNotification('test message');
-    expect(mockedAxios.post).toHaveBeenCalledWith(expect.stringContaining('sendMessage'), expect.any(Object));
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      expect.stringContaining('sendMessage'),
+      expect.any(Object)
+    );
   });
 
   it('should log error if axios fails', async () => {

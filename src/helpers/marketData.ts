@@ -9,7 +9,8 @@ import logger from './logger.js';
 export async function getDailyCandles(token: string, exchange: string): Promise<Candle[]> {
   try {
     const toDate = new Date().toISOString().split('T')[0] + ' 15:30';
-    const fromDate = new Date(Date.now() - 150 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + ' 09:15';
+    const fromDate =
+      new Date(Date.now() - 150 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + ' 09:15';
 
     const response = await api.post(API_URLS.HISTORICAL, {
       exchange,
@@ -47,7 +48,12 @@ export async function getLtp(token: string, exchange: string): Promise<number> {
       },
     });
 
-    if (response.data && response.data.status && response.data.data.fetched && response.data.data.fetched.length > 0) {
+    if (
+      response.data &&
+      response.data.status &&
+      response.data.data.fetched &&
+      response.data.data.fetched.length > 0
+    ) {
       return response.data.data.fetched[0].ltp;
     }
     throw new Error('LTP fetch failed');

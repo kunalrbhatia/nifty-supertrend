@@ -18,7 +18,7 @@ describe('HolidayCheck Helper', () => {
   it('should return false for weekends (Saturday)', async () => {
     const saturday = new Date('2024-06-08'); // Saturday
     global.Date = jest.fn(() => saturday) as any;
-    
+
     const result = await isTradingDay();
     expect(result).toBe(false);
   });
@@ -26,7 +26,7 @@ describe('HolidayCheck Helper', () => {
   it('should return false for weekends (Sunday)', async () => {
     const sunday = new Date('2024-06-09'); // Sunday
     global.Date = jest.fn(() => sunday) as any;
-    
+
     const result = await isTradingDay();
     expect(result).toBe(false);
   });
@@ -37,8 +37,8 @@ describe('HolidayCheck Helper', () => {
 
     mockedAxios.get.mockResolvedValue({
       data: {
-        trading: [{ tradingDate: '10-Jun-2024' }]
-      }
+        trading: [{ tradingDate: '10-Jun-2024' }],
+      },
     });
 
     const result = await isTradingDay();
@@ -51,8 +51,8 @@ describe('HolidayCheck Helper', () => {
 
     mockedAxios.get.mockResolvedValue({
       data: {
-        trading: [{ tradingDate: '25-Dec-2024' }]
-      }
+        trading: [{ tradingDate: '25-Dec-2024' }],
+      },
     });
 
     const result = await isTradingDay();

@@ -27,14 +27,18 @@ describe('StatusCommand', () => {
       trades: [],
     });
     jest.spyOn(marketData, 'getLtp').mockResolvedValue(260);
-    jest.spyOn(marketData, 'getDailyCandles').mockResolvedValue(new Array(30).fill({ high: 100, low: 90, close: 95 }));
+    jest
+      .spyOn(marketData, 'getDailyCandles')
+      .mockResolvedValue(new Array(30).fill({ high: 100, low: 90, close: 95 }));
     jest.spyOn(modeManager, 'isPaperMode').mockReturnValue(true);
 
     await statusHandler(mockCtx);
 
     expect(mockCtx.replyWithMarkdown).toHaveBeenCalledWith(expect.stringContaining('LTP: ₹260'));
     expect(mockCtx.replyWithMarkdown).toHaveBeenCalledWith(expect.stringContaining('P&L: 4.00%'));
-    expect(mockCtx.replyWithMarkdown).toHaveBeenCalledWith(expect.stringContaining('*Nifty 50 Indicator:*'));
+    expect(mockCtx.replyWithMarkdown).toHaveBeenCalledWith(
+      expect.stringContaining('*Nifty 50 Indicator:*')
+    );
   });
 
   it('should handle errors gracefully', async () => {

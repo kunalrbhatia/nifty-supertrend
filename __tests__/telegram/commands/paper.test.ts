@@ -20,6 +20,9 @@ describe('PaperCommand', () => {
     await paperHandler(mockCtx);
 
     expect(setSpy).toHaveBeenCalledWith(true);
-    expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('*PAPER*'), expect.any(Object));
+    expect(mockCtx.reply).toHaveBeenCalledWith(
+      expect.stringContaining('*PAPER*'),
+      expect.any(Object)
+    );
   });
 });
