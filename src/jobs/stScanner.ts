@@ -1,6 +1,6 @@
-import { getDailyCandles, getLtp } from '../helpers/marketData.js';
+import { getCandles, getLtp } from '../helpers/marketData.js';
 import { calculateSuperTrend } from '../helpers/supertrend.js';
-import { CONSTANTS } from '../helpers/constants.js';
+import { CONSTANTS, TIMEFRAMES } from '../helpers/constants.js';
 import holdingStore from '../store/holdingStore.js';
 import configStore from '../store/configStore.js';
 import { placeOrder } from '../helpers/orders.js';
@@ -12,7 +12,11 @@ import { sendNotification } from '../notifier.js';
  * Main strategy job: runs every day at 3:26 PM IST.
  */
 export async function runStScanner(): Promise<void> {
-  logger.info('Starting daily ST scan...');
+  const timeframe = configStore.getTimeframe();
+  const userFriendlyTimeframe =
+    Object.keys(TIMEFRAMES).find((key) => TIMEFRAMES[key] === timeframe) || timeframe;
+
+  logger.info(`Starting daily ST scan (${userFriendlyTimeframe})...`);
 
   // 1. Holiday check
   const isMarketOpen = await isTradingDay();
@@ -21,9 +25,9 @@ export async function runStScanner(): Promise<void> {
   try {
     // 2. Fetch market data
     // Fetch Nifty 50 candles for indicator
-    const n50Candles = await getDailyCandles(CONSTANTS.NIFTY50_TOKEN, CONSTANTS.EXCHANGE);
+    const n50Candles = await getCandles(CONSTANTS.NIFTY50_TOKEN, CONSTANTS.EXCHANGE, timeframe);
     if (n50Candles.length < 20) {
-      logger.error('Insufficient candle data for Nifty 50 ST calculation');
+      logger.error(`Insufficient candle data for Nifty 50 ST calculation (${timeframe})`);
       return;
     }
 
@@ -36,7 +40,7 @@ export async function runStScanner(): Promise<void> {
     const currST = stResults[stResults.length - 1];
 
     logger.info(
-      `ST (Nifty 50) Status: Prev=${prevST.trend}, Curr=${currST.trend} | Bees LTP: ${beesLtp}`
+      `ST (Nifty 50) Status: Prev=${prevST.trend}, Curr=${currST.trend} | TF: ${userFriendlyTimeframe} | Bees LTP: ${beesLtp}`
     );
 
     // 4. Signal Detection

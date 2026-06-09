@@ -10,6 +10,17 @@ export const CONSTANTS = {
   TIMEZONE: 'Asia/Kolkata',
 };
 
+export const TIMEFRAMES: Record<string, string> = {
+  '1': 'ONE_MINUTE',
+  '3': 'THREE_MINUTE',
+  '5': 'FIVE_MINUTE',
+  '10': 'TEN_MINUTE',
+  '15': 'FIFTEEN_MINUTE',
+  '30': 'THIRTY_MINUTE',
+  '1h': 'ONE_HOUR',
+  '1d': 'ONE_DAY',
+};
+
 export const API_URLS = {
   SMART_API_BASE: 'https://apiconnect.angelbroking.com',
   LOGIN: '/rest/auth/angelbroking/user/v1/loginByPassword',

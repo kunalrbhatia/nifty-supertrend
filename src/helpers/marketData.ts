@@ -1,21 +1,30 @@
 import api from './api.js';
-import { API_URLS, CONSTANTS } from './constants.js';
+import { API_URLS } from './constants.js';
 import { Candle } from './supertrend.js';
 import logger from './logger.js';
 
 /**
- * Fetch daily candles for a given token.
+ * Fetch candles for a given token and interval.
  */
-export async function getDailyCandles(token: string, exchange: string): Promise<Candle[]> {
+export async function getCandles(
+  token: string,
+  exchange: string,
+  interval: string
+): Promise<Candle[]> {
   try {
     const toDate = new Date().toISOString().split('T')[0] + ' 15:30';
+    let daysBack = 150;
+    if (interval === 'ONE_MINUTE') daysBack = 10;
+    else if (interval.includes('MINUTE')) daysBack = 30;
+    else if (interval === 'ONE_HOUR') daysBack = 60;
+
     const fromDate =
-      new Date(Date.now() - 150 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + ' 09:15';
+      new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + ' 09:15';
 
     const response = await api.post(API_URLS.HISTORICAL, {
       exchange,
       symboltoken: token,
-      interval: CONSTANTS.INTERVAL_DAILY,
+      interval: interval,
       fromdate: fromDate,
       todate: toDate,
     });
@@ -31,7 +40,7 @@ export async function getDailyCandles(token: string, exchange: string): Promise<
     }
     return [];
   } catch (error: any) {
-    logger.error(`Error fetching daily candles: ${error.message}`);
+    logger.error(`Error fetching candles (${interval}): ${error.message}`);
     return [];
   }
 }

@@ -35,4 +35,12 @@ describe('ConfigStore', () => {
     const data = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
     expect(data.investmentAmount).toBe(20000);
   });
+
+  it('should get and set timeframe correctly', () => {
+    configStore.setTimeframe('ONE_HOUR');
+    expect(configStore.getTimeframe()).toBe('ONE_HOUR');
+
+    const data = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+    expect(data.timeframe).toBe('ONE_HOUR');
+  });
 });

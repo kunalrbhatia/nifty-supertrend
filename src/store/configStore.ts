@@ -5,12 +5,14 @@ import { CONSTANTS } from '../helpers/constants.js';
 
 export interface AppConfig {
   investmentAmount: number;
+  timeframe: string;
 }
 
 const CONFIG_FILE = path.join(process.cwd(), 'data/config.json');
 
 const initialConfig: AppConfig = {
   investmentAmount: CONSTANTS.DEFAULT_INVESTMENT,
+  timeframe: CONSTANTS.INTERVAL_DAILY,
 };
 
 class ConfigStore {
@@ -24,7 +26,7 @@ class ConfigStore {
     try {
       if (fs.existsSync(CONFIG_FILE)) {
         const data = fs.readFileSync(CONFIG_FILE, 'utf-8');
-        return JSON.parse(data);
+        return { ...initialConfig, ...JSON.parse(data) };
       }
     } catch (error) {
       logger.error('Error loading config:', error);
@@ -54,6 +56,15 @@ class ConfigStore {
 
   setInvestmentAmount(amount: number): void {
     this.config.investmentAmount = amount;
+    this.save();
+  }
+
+  getTimeframe(): string {
+    return this.config.timeframe;
+  }
+
+  setTimeframe(timeframe: string): void {
+    this.config.timeframe = timeframe;
     this.save();
   }
 }

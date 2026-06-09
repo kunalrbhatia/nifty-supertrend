@@ -1,17 +1,21 @@
 import { Context } from 'telegraf';
 import holdingStore from '../../store/holdingStore.js';
-import { getDailyCandles, getLtp } from '../../helpers/marketData.js';
+import configStore from '../../store/configStore.js';
+import { getCandles, getLtp } from '../../helpers/marketData.js';
 import { calculateSuperTrend } from '../../helpers/supertrend.js';
-import { CONSTANTS } from '../../helpers/constants.js';
+import { CONSTANTS, TIMEFRAMES } from '../../helpers/constants.js';
 import { isPaperMode } from '../../helpers/modeManager.js';
 
 export async function statusHandler(ctx: Context) {
   const holdings = holdingStore.get();
   const isPaper = isPaperMode();
+  const timeframe = configStore.getTimeframe();
+  const userFriendlyTF =
+    Object.keys(TIMEFRAMES).find((key) => TIMEFRAMES[key] === timeframe) || timeframe;
 
   try {
     const beesLtp = await getLtp(CONSTANTS.NIFTYBEES_TOKEN, CONSTANTS.EXCHANGE);
-    const n50Candles = await getDailyCandles(CONSTANTS.NIFTY50_TOKEN, CONSTANTS.EXCHANGE);
+    const n50Candles = await getCandles(CONSTANTS.NIFTY50_TOKEN, CONSTANTS.EXCHANGE, timeframe);
     const stResults = calculateSuperTrend(n50Candles);
     const latestST = stResults[stResults.length - 1];
 
@@ -22,7 +26,7 @@ export async function statusHandler(ctx: Context) {
 
     const message = `📊 *Strategy Status* (${isPaper ? 'PAPER' : 'LIVE'})
 --------------------------
-*Nifty 50 Indicator:*
+*Nifty 50 Indicator (${userFriendlyTF}):*
 Trend: ${latestST.trend === 'UP' ? '🟢 UP' : '🔴 DOWN'}
 ST Value: ₹${latestST.value.toFixed(2)}
 
