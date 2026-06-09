@@ -24,22 +24,22 @@ describe('stScanner Job', () => {
   it('should skip if it is not a trading day', async () => {
     jest.spyOn(holidayCheck, 'isTradingDay').mockResolvedValue(false);
     await runStScanner();
-    expect(marketData.getDailyCandles).not.toHaveBeenCalled();
+    expect(marketData.getCandles).not.toHaveBeenCalled();
   });
 
   it('should handle insufficient candle data', async () => {
     jest.spyOn(holidayCheck, 'isTradingDay').mockResolvedValue(true);
-    jest.spyOn(marketData, 'getDailyCandles').mockResolvedValue([]);
+    jest.spyOn(marketData, 'getCandles').mockResolvedValue([]);
     await runStScanner();
     expect(logger.error).toHaveBeenCalledWith(
-      'Insufficient candle data for Nifty 50 ST calculation'
+      'Insufficient candle data for Nifty 50 ST calculation (ONE_DAY)'
     );
   });
 
   it('should execute BUY signal correctly', async () => {
     jest.spyOn(holidayCheck, 'isTradingDay').mockResolvedValue(true);
-    // Mock getDailyCandles for Nifty 50
-    jest.spyOn(marketData, 'getDailyCandles').mockImplementation((token) => {
+    // Mock getCandles for Nifty 50
+    jest.spyOn(marketData, 'getCandles').mockImplementation((token) => {
       if (token === CONSTANTS.NIFTY50_TOKEN) {
         return Promise.resolve(new Array(30).fill({}));
       }
@@ -78,7 +78,7 @@ describe('stScanner Job', () => {
 
   it('should execute SELL signal (EXIT) correctly', async () => {
     jest.spyOn(holidayCheck, 'isTradingDay').mockResolvedValue(true);
-    jest.spyOn(marketData, 'getDailyCandles').mockResolvedValue(new Array(30).fill({}));
+    jest.spyOn(marketData, 'getCandles').mockResolvedValue(new Array(30).fill({}));
     jest.spyOn(marketData, 'getLtp').mockResolvedValue(260); // 4% profit over 250
     jest.spyOn(supertrend, 'calculateSuperTrend').mockReturnValue([
       { trend: 'UP', value: 240 },
@@ -105,7 +105,7 @@ describe('stScanner Job', () => {
 
   it('should handle SELL signal (HOLD) correctly', async () => {
     jest.spyOn(holidayCheck, 'isTradingDay').mockResolvedValue(true);
-    jest.spyOn(marketData, 'getDailyCandles').mockResolvedValue(new Array(30).fill({}));
+    jest.spyOn(marketData, 'getCandles').mockResolvedValue(new Array(30).fill({}));
     jest.spyOn(marketData, 'getLtp').mockResolvedValue(251); // 0.4% profit < 1%
     jest.spyOn(supertrend, 'calculateSuperTrend').mockReturnValue([
       { trend: 'UP', value: 240 },

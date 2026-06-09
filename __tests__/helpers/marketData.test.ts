@@ -1,5 +1,5 @@
 import api from '../../src/helpers/api';
-import { getDailyCandles, getLtp } from '../../src/helpers/marketData';
+import { getCandles, getLtp } from '../../src/helpers/marketData';
 
 jest.mock('../../src/helpers/api');
 const mockedApi = api as jest.Mocked<typeof api>;
@@ -9,7 +9,7 @@ describe('MarketData Helper', () => {
     jest.clearAllMocks();
   });
 
-  it('should fetch daily candles correctly', async () => {
+  it('should fetch candles correctly', async () => {
     const mockData = {
       data: {
         status: true,
@@ -18,14 +18,14 @@ describe('MarketData Helper', () => {
     };
     mockedApi.post.mockResolvedValue(mockData);
 
-    const candles = await getDailyCandles('10576', 'NSE');
+    const candles = await getCandles('10576', 'NSE', 'ONE_DAY');
     expect(candles).toHaveLength(1);
     expect(candles[0].close).toBe(102);
   });
 
   it('should return empty array if candle fetch fails', async () => {
     mockedApi.post.mockRejectedValue(new Error('Fail'));
-    const candles = await getDailyCandles('10576', 'NSE');
+    const candles = await getCandles('10576', 'NSE', 'ONE_DAY');
     expect(candles).toHaveLength(0);
   });
 
