@@ -25,7 +25,7 @@ describe('Orders Helper', () => {
   it('should place live order correctly', async () => {
     mockedIsPaperMode.mockReturnValue(false);
     mockedApi.post.mockResolvedValue({
-      data: { status: true, data: { orderid: '123' } }
+      data: { status: true, data: { orderid: '123' } },
     });
 
     await placeOrder('BUY', 10);
@@ -36,7 +36,7 @@ describe('Orders Helper', () => {
   it('should throw error if live order fails', async () => {
     mockedIsPaperMode.mockReturnValue(false);
     mockedApi.post.mockResolvedValue({
-      data: { status: false, message: 'Insufficient funds' }
+      data: { status: false, message: 'Insufficient funds' },
     });
 
     await expect(placeOrder('BUY', 10)).rejects.toThrow('Insufficient funds');

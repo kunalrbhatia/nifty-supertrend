@@ -7,5 +7,7 @@ export async function paperHandler(ctx: Context) {
 
   setPaperMode(newMode);
 
-  await ctx.reply(`Trading mode switched to: *${newMode ? 'PAPER' : 'LIVE'}*`, { parse_mode: 'Markdown' });
+  await ctx.reply(`Trading mode switched to: *${newMode ? 'PAPER' : 'LIVE'}*`, {
+    parse_mode: 'Markdown',
+  });
 }

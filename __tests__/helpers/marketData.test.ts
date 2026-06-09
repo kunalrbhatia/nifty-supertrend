@@ -13,8 +13,8 @@ describe('MarketData Helper', () => {
     const mockData = {
       data: {
         status: true,
-        data: [['2024-06-10', 100, 105, 95, 102]]
-      }
+        data: [['2024-06-10', 100, 105, 95, 102]],
+      },
     };
     mockedApi.post.mockResolvedValue(mockData);
 
@@ -34,9 +34,9 @@ describe('MarketData Helper', () => {
       data: {
         status: true,
         data: {
-          fetched: [{ ltp: 250.5 }]
-        }
-      }
+          fetched: [{ ltp: 250.5 }],
+        },
+      },
     };
     mockedApi.post.mockResolvedValue(mockData);
 

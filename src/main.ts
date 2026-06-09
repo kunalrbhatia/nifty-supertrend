@@ -20,19 +20,22 @@ async function bootstrap() {
     await login();
 
     // 4. Register Cron Job (03:26 PM IST)
-    cron.schedule('26 15 * * 1-5', async () => {
-      try {
-        await runStScanner();
-      } catch (error: any) {
-        logger.error(`Cron job error: ${error.message}`);
+    cron.schedule(
+      '26 15 * * 1-5',
+      async () => {
+        try {
+          await runStScanner();
+        } catch (error: any) {
+          logger.error(`Cron job error: ${error.message}`);
+        }
+      },
+      {
+        timezone: 'Asia/Kolkata',
       }
-    }, {
-      timezone: 'Asia/Kolkata'
-    });
+    );
 
     logger.info('Algo initialized and scheduled successfully');
     await sendNotification('🚀 *ST-ETF Algo initialized and ready!*');
-
   } catch (error: any) {
     logger.error(`Bootstrap failed: ${error.message}`);
     process.exit(1);

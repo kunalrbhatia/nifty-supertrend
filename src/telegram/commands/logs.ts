@@ -18,7 +18,11 @@ export async function logsHandler(ctx: Context) {
   // 2. Fallback to file logs
   try {
     const logsDir = path.join(process.cwd(), 'logs');
-    const files = fs.readdirSync(logsDir).filter(f => f.endsWith('.log')).sort().reverse();
+    const files = fs
+      .readdirSync(logsDir)
+      .filter((f) => f.endsWith('.log'))
+      .sort()
+      .reverse();
 
     if (files.length > 0) {
       const lastFile = path.join(logsDir, files[0]);

@@ -34,6 +34,10 @@ class ConfigStore {
 
   private save(): void {
     try {
+      const dir = path.dirname(CONFIG_FILE);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
       fs.writeFileSync(CONFIG_FILE, JSON.stringify(this.config, null, 2));
     } catch (error) {
       logger.error('Error saving config:', error);

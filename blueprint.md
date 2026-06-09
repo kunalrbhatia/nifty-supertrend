@@ -23,7 +23,7 @@ The strategy operates on **Daily closed candles** of `NIFTYBEES`. By running the
 
 | Concern | Choice |
 |---|---|
-| Runtime | Node.js >= 20 LTS |
+| Runtime | Node.js >= 22 LTS |
 | Language | TypeScript (strict), ES modules (`import`/`export`) |
 | Package manager | pnpm |
 | Framework | Express (Health check endpoint only) |
@@ -37,6 +37,9 @@ The strategy operates on **Daily closed candles** of `NIFTYBEES`. By running the
 | Testing | Jest + ts-jest, 100% coverage enforced |
 | Linting | ESLint + Prettier |
 | Pre-commit | Husky + lint-staged (The "Pre-Tool") |
+| Commits | Conventional Commits (Commitizen) - No Emojis |
+| Branching | Conventional Branch Naming (`type/description`) |
+| PR Titles | Conventional PR Titles (e.g., `feat: update config`) |
 | PR Validation | GitHub CLI (`gh pr checks`) (The "Post-Tool") |
 | Process manager | PM2 (Oracle Cloud Free Tier) |
 | Env | `.env` via `dotenv` |

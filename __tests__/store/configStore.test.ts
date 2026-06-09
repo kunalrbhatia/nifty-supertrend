@@ -29,7 +29,7 @@ describe('ConfigStore', () => {
   it('should update investment amount correctly', () => {
     configStore.setInvestmentAmount(20000);
     expect(configStore.getInvestmentAmount()).toBe(20000);
-    
+
     // Verify persistence
     expect(fs.existsSync(CONFIG_FILE)).toBe(true);
     const data = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));

@@ -29,11 +29,13 @@ export function calculateSuperTrend(candles: Candle[], period = 10, multiplier =
     medianPrices.push((curr.high + curr.low) / 2);
 
     if (prev) {
-      tr.push(Math.max(
-        curr.high - curr.low,
-        Math.abs(curr.high - prev.close),
-        Math.abs(curr.low - prev.close)
-      ));
+      tr.push(
+        Math.max(
+          curr.high - curr.low,
+          Math.abs(curr.high - prev.close),
+          Math.abs(curr.low - prev.close)
+        )
+      );
     } else {
       tr.push(curr.high - curr.low);
     }
@@ -63,14 +65,16 @@ export function calculateSuperTrend(candles: Candle[], period = 10, multiplier =
       finalLower[i] = basicLower;
     } else {
       // Final Upperband logic
-      finalUpper[i] = (basicUpper < finalUpper[i - 1] || candles[i - 1].close > finalUpper[i - 1])
-        ? basicUpper
-        : finalUpper[i - 1];
+      finalUpper[i] =
+        basicUpper < finalUpper[i - 1] || candles[i - 1].close > finalUpper[i - 1]
+          ? basicUpper
+          : finalUpper[i - 1];
 
       // Final Lowerband logic
-      finalLower[i] = (basicLower > finalLower[i - 1] || candles[i - 1].close < finalLower[i - 1])
-        ? basicLower
-        : finalLower[i - 1];
+      finalLower[i] =
+        basicLower > finalLower[i - 1] || candles[i - 1].close < finalLower[i - 1]
+          ? basicLower
+          : finalLower[i - 1];
     }
 
     // Trend determination

@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: [CI]
     types: [completed]
-    branches: [main]
+    branches: [master]
 
 jobs:
   deploy:
@@ -16,11 +16,11 @@ jobs:
 
       - uses: pnpm/action-setup@v3
         with:
-          version: latest
+          version: 9
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
@@ -37,7 +37,7 @@ jobs:
           key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
             cd ~/st-etf-algo
-            git pull origin main
+            git pull origin master
             pnpm install --frozen-lockfile
             pnpm build
             pm2 restart st-etf-algo

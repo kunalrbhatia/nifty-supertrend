@@ -3,7 +3,7 @@ import api from '../../src/helpers/api';
 import sessionStore from '../../src/store/sessionStore';
 
 jest.mock('otplib', () => ({
-  generate: jest.fn().mockReturnValue('123456')
+  generate: jest.fn().mockReturnValue('123456'),
 }));
 jest.mock('../../src/helpers/api');
 jest.mock('../../src/store/sessionStore');
@@ -17,9 +17,9 @@ describe('Login Helper', () => {
         data: {
           jwtToken: 'jwt',
           refreshToken: 'refresh',
-          feedToken: 'feed'
-        }
-      }
+          feedToken: 'feed',
+        },
+      },
     });
 
     const setSpy = jest.spyOn(sessionStore, 'set');
@@ -31,7 +31,7 @@ describe('Login Helper', () => {
 
   it('should throw error if login fails', async () => {
     mockedApi.post.mockResolvedValue({
-      data: { status: false, message: 'Invalid credentials' }
+      data: { status: false, message: 'Invalid credentials' },
     });
 
     await expect(login()).rejects.toThrow('Invalid credentials');

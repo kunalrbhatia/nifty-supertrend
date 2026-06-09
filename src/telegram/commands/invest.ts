@@ -13,7 +13,9 @@ export async function investHandler(ctx: Context) {
   const newAmt = parseInt(args[0]);
 
   if (isNaN(newAmt) || newAmt <= 0) {
-    return await ctx.reply('Invalid amount. Please provide a positive number (e.g., /invest 20000)');
+    return await ctx.reply(
+      'Invalid amount. Please provide a positive number (e.g., /invest 20000)'
+    );
   }
 
   configStore.setInvestmentAmount(newAmt);
