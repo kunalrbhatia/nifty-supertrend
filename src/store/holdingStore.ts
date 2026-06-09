@@ -47,6 +47,10 @@ class HoldingStore {
 
   private save(): void {
     try {
+      const dir = path.dirname(HOLDINGS_FILE);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
       fs.writeFileSync(HOLDINGS_FILE, JSON.stringify(this.state, null, 2));
     } catch (error) {
       logger.error('Error saving holdings:', error);
