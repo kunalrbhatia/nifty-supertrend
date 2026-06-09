@@ -19,6 +19,7 @@ jobs:
           username: ${{ secrets.ORACLE_USER }}
           key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
+            export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v24.16.0/bin
             cd ~/nifty-supertrend
             git pull origin master
             pnpm install --frozen-lockfile
