@@ -2,6 +2,7 @@ import api from './api.js';
 import { API_URLS, CONSTANTS } from './constants.js';
 import logger from './logger.js';
 import { isPaperMode } from './modeManager.js';
+import { sendNotification } from '../notifier.js';
 
 export async function placeOrder(
   action: 'BUY' | 'SELL',
@@ -12,7 +13,9 @@ export async function placeOrder(
   const isPaper = isPaperMode();
 
   if (isPaper) {
-    logger.info(`[PAPER] ${action} order placed for ${quantity} units of ${symbol}`);
+    const msg = `[PAPER] ✅ ${action} order placed for ${quantity} units of ${symbol}`;
+    logger.info(msg);
+    await sendNotification(msg);
     return;
   }
 
@@ -30,12 +33,19 @@ export async function placeOrder(
     });
 
     if (response.data && response.data.status) {
-      logger.info(`[LIVE] ${action} order success: ${response.data.data.orderid}`);
+      const orderId = response.data.data.orderid;
+      logger.info(`[LIVE] ${action} order success: ${orderId}`);
+      await sendNotification(
+        `[LIVE] ✅ *${action} Order Success*\nID: ${orderId}\nAsset: ${symbol}\nQty: ${quantity}`
+      );
     } else {
-      throw new Error(response.data.message || 'Order failed');
+      const errorMsg = response.data.message || 'Order failed';
+      throw new Error(errorMsg);
     }
   } catch (error: any) {
-    logger.error(`Error placing ${action} order: ${error.message}`);
+    const errorMsg = `❌ *ORDER ERROR:* Failed to place ${action} order.\nError: ${error.message}`;
+    logger.error(errorMsg);
+    await sendNotification(errorMsg);
     throw error;
   }
 }

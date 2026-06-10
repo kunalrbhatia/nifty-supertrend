@@ -126,4 +126,53 @@ describe('stScanner Job', () => {
       expect.stringContaining('SELL SIGNAL (HOLD) - Nifty 50')
     );
   });
+
+  it('should notify on BUY signal even if qty is 0', async () => {
+    jest.spyOn(holidayCheck, 'isTradingDay').mockResolvedValue(true);
+    jest.spyOn(marketData, 'getCandles').mockResolvedValue(new Array(30).fill({}));
+    jest.spyOn(marketData, 'getLtp').mockResolvedValue(250);
+    jest.spyOn(supertrend, 'calculateSuperTrend').mockReturnValue([
+      { trend: 'DOWN', value: 260 },
+      { trend: 'UP', value: 240 },
+    ]);
+    jest.spyOn(configStore, 'getInvestmentAmount').mockReturnValue(100); // Too low for 250 LTP
+    jest.spyOn(holdingStore, 'get').mockReturnValue({
+      totalQuantity: 0,
+      averagePrice: 0,
+      totalInvestment: 0,
+      lastSignal: 'NONE',
+      trades: [],
+    });
+
+    await runStScanner();
+
+    expect(orders.placeOrder).not.toHaveBeenCalled();
+    expect(notifier.sendNotification).toHaveBeenCalledWith(
+      expect.stringContaining('TREND SWITCH: UP (Nifty 50)')
+    );
+  });
+
+  it('should notify on SELL signal even if no holdings', async () => {
+    jest.spyOn(holidayCheck, 'isTradingDay').mockResolvedValue(true);
+    jest.spyOn(marketData, 'getCandles').mockResolvedValue(new Array(30).fill({}));
+    jest.spyOn(marketData, 'getLtp').mockResolvedValue(250);
+    jest.spyOn(supertrend, 'calculateSuperTrend').mockReturnValue([
+      { trend: 'UP', value: 240 },
+      { trend: 'DOWN', value: 260 },
+    ]);
+    jest.spyOn(holdingStore, 'get').mockReturnValue({
+      totalQuantity: 0,
+      averagePrice: 0,
+      totalInvestment: 0,
+      lastSignal: 'NONE',
+      trades: [],
+    });
+
+    await runStScanner();
+
+    expect(orders.placeOrder).not.toHaveBeenCalled();
+    expect(notifier.sendNotification).toHaveBeenCalledWith(
+      expect.stringContaining('TREND SWITCH: DOWN (Nifty 50)')
+    );
+  });
 });

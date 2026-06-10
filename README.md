@@ -81,6 +81,7 @@ The bot features an interactive Telegram interface to control the algorithm on t
 | Command | Action |
 | :--- | :--- |
 | `/status` | Returns the current Nifty 50 ST status, NiftyBees LTP, Avg Price, and live P&L. |
+| `/positions` | Shows detailed breakdown of current holdings and total P&L. |
 | `/timeframe <val>` | Changes the SuperTrend calculation interval (e.g., `/timeframe 1h`, `/timeframe 1d`). |
 | `/invest <amt>` | Updates the ₹ tranche size invested per Buy signal (e.g., `/invest 20000`). |
 | `/paper` | Toggles between LIVE and PAPER trading modes instantly. |

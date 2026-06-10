@@ -2,10 +2,12 @@ import api from '../../src/helpers/api';
 import { placeOrder } from '../../src/helpers/orders';
 import { isPaperMode } from '../../src/helpers/modeManager';
 import logger from '../../src/helpers/logger';
+import * as notifier from '../../src/notifier';
 
 jest.mock('../../src/helpers/api');
 jest.mock('../../src/helpers/modeManager');
 jest.mock('../../src/helpers/logger');
+jest.mock('../../src/notifier');
 
 const mockedApi = api as jest.Mocked<typeof api>;
 const mockedIsPaperMode = isPaperMode as jest.MockedFunction<typeof isPaperMode>;
@@ -19,6 +21,7 @@ describe('Orders Helper', () => {
     mockedIsPaperMode.mockReturnValue(true);
     await placeOrder('BUY', 10);
     expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('[PAPER]'));
+    expect(notifier.sendNotification).toHaveBeenCalledWith(expect.stringContaining('[PAPER]'));
     expect(mockedApi.post).not.toHaveBeenCalled();
   });
 
@@ -31,6 +34,7 @@ describe('Orders Helper', () => {
     await placeOrder('BUY', 10);
     expect(mockedApi.post).toHaveBeenCalled();
     expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('[LIVE]'));
+    expect(notifier.sendNotification).toHaveBeenCalledWith(expect.stringContaining('[LIVE]'));
   });
 
   it('should throw error if live order fails', async () => {
@@ -40,6 +44,7 @@ describe('Orders Helper', () => {
     });
 
     await expect(placeOrder('BUY', 10)).rejects.toThrow('Insufficient funds');
+    expect(notifier.sendNotification).toHaveBeenCalledWith(expect.stringContaining('ORDER ERROR'));
   });
 
   it('should log error if axios fails', async () => {
@@ -48,5 +53,6 @@ describe('Orders Helper', () => {
 
     await expect(placeOrder('BUY', 10)).rejects.toThrow('Network error');
     expect(logger.error).toHaveBeenCalled();
+    expect(notifier.sendNotification).toHaveBeenCalledWith(expect.stringContaining('ORDER ERROR'));
   });
 });

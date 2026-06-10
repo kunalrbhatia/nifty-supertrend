@@ -2,6 +2,7 @@ import { Telegraf } from 'telegraf';
 import { config } from '../config/env.js';
 import logger from '../helpers/logger.js';
 import { statusHandler } from './commands/status.js';
+import { positionsHandler } from './commands/positions.js';
 import { logsHandler } from './commands/logs.js';
 import { paperHandler } from './commands/paper.js';
 import { updateHandler } from './commands/update.js';
@@ -20,6 +21,7 @@ bot.use(async (ctx, next) => {
 
 // Command registration
 bot.command('status', statusHandler);
+bot.command('positions', positionsHandler);
 bot.command('logs', logsHandler);
 bot.command('paper', paperHandler);
 bot.command('update', updateHandler);

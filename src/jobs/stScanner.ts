@@ -60,6 +60,11 @@ export async function runStScanner(): Promise<void> {
         await sendNotification(
           `🟢 *BUY SIGNAL (Nifty 50)*\nAsset: NIFTYBEES\nPrice: ₹${beesLtp}\nQty: ${qty}\nNew Avg: ₹${newHoldings.averagePrice.toFixed(2)}\nTotal Qty: ${newHoldings.totalQuantity}`
         );
+      } else {
+        logger.info(`🟢 BUY SIGNAL (N50) but Qty is 0. No trade.`);
+        await sendNotification(
+          `🟢 *TREND SWITCH: UP (Nifty 50)*\nPrice: ₹${beesLtp}\nNo trade: Insufficient funds or Qty is 0.`
+        );
       }
     }
 
@@ -88,6 +93,9 @@ export async function runStScanner(): Promise<void> {
         }
       } else {
         logger.info('Nifty 50 ST turned RED but no active holdings to sell.');
+        await sendNotification(
+          `🔴 *TREND SWITCH: DOWN (Nifty 50)*\nPrice: ₹${beesLtp}\nNo active holdings to sell.`
+        );
       }
     } else {
       logger.info(`Nifty 50 Trend remains ${currST.trend}. No action taken.`);
