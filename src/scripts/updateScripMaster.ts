@@ -22,8 +22,9 @@ async function updateScripMaster() {
     } else {
       throw new Error('Invalid scrip master data received');
     }
-  } catch (error: any) {
-    logger.error(`Failed to update scrip master: ${error.message}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Failed to update scrip master: ${errorMessage}`);
     process.exit(1);
   }
 }

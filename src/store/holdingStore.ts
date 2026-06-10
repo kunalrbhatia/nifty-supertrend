@@ -78,6 +78,13 @@ class HoldingStore {
     this.state = { ...initialState, lastSignal: 'SELL' };
     this.save();
   }
+
+  reset(): void {
+    this.state = { ...initialState };
+    if (fs.existsSync(HOLDINGS_FILE)) {
+      fs.unlinkSync(HOLDINGS_FILE);
+    }
+  }
 }
 
 export default new HoldingStore();

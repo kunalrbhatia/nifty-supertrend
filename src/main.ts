@@ -25,8 +25,9 @@ async function bootstrap() {
       async () => {
         try {
           await runStScanner();
-        } catch (error: any) {
-          logger.error(`Cron job error: ${error.message}`);
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          logger.error(`Cron job error: ${errorMessage}`);
         }
       },
       {
@@ -36,8 +37,9 @@ async function bootstrap() {
 
     logger.info('Algo initialized and scheduled successfully');
     await sendNotification('🚀 *ST-ETF Algo initialized and ready!*');
-  } catch (error: any) {
-    logger.error(`Bootstrap failed: ${error.message}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Bootstrap failed: ${errorMessage}`);
     process.exit(1);
   }
 }

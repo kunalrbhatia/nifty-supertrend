@@ -26,8 +26,9 @@ export async function login(): Promise<void> {
       logger.error(`Login failed with response: ${JSON.stringify(response.data)}`);
       throw new Error(response.data?.message || 'Login failed');
     }
-  } catch (error: any) {
-    logger.error('Login error:', error.message);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error('Login error:', errorMessage);
     throw error;
   }
 }

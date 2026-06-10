@@ -7,13 +7,7 @@ const CONFIG_FILE = path.join(process.cwd(), 'data/config.json');
 
 describe('ConfigStore', () => {
   beforeEach(() => {
-    if (fs.existsSync(CONFIG_FILE)) {
-      fs.unlinkSync(CONFIG_FILE);
-    }
-    // Reset singleton state manually for tests
-    (configStore as any).config = {
-      investmentAmount: CONSTANTS.DEFAULT_INVESTMENT,
-    };
+    configStore.reset();
   });
 
   afterAll(() => {

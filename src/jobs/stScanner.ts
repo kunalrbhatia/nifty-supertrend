@@ -100,8 +100,9 @@ export async function runStScanner(): Promise<void> {
     } else {
       logger.info(`Nifty 50 Trend remains ${currST.trend}. No action taken.`);
     }
-  } catch (error: any) {
-    logger.error(`Error in stScanner job: ${error.message}`);
-    await sendNotification(`⚠️ *ST-ETF ERROR:* ${error.message}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Error in stScanner job: ${errorMessage}`);
+    await sendNotification(`⚠️ *ST-ETF ERROR:* ${errorMessage}`);
   }
 }

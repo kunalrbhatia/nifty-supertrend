@@ -67,6 +67,13 @@ class ConfigStore {
     this.config.timeframe = timeframe;
     this.save();
   }
+
+  reset(): void {
+    this.config = { ...initialConfig };
+    if (fs.existsSync(CONFIG_FILE)) {
+      fs.unlinkSync(CONFIG_FILE);
+    }
+  }
 }
 
 export default new ConfigStore();

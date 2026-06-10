@@ -30,17 +30,18 @@ export async function getCandles(
     });
 
     if (response.data && response.data.status) {
-      return response.data.data.map((c: any) => ({
-        timestamp: c[0],
-        open: c[1],
-        high: c[2],
-        low: c[3],
-        close: c[4],
+      return response.data.data.map((c: (string | number)[]) => ({
+        timestamp: c[0] as string,
+        open: c[1] as number,
+        high: c[2] as number,
+        low: c[3] as number,
+        close: c[4] as number,
       }));
     }
     return [];
-  } catch (error: any) {
-    logger.error(`Error fetching candles (${interval}): ${error.message}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Error fetching candles (${interval}): ${errorMessage}`);
     return [];
   }
 }
@@ -66,8 +67,9 @@ export async function getLtp(token: string, exchange: string): Promise<number> {
       return response.data.data.fetched[0].ltp;
     }
     throw new Error('LTP fetch failed');
-  } catch (error: any) {
-    logger.error(`Error fetching LTP: ${error.message}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Error fetching LTP: ${errorMessage}`);
     throw error;
   }
 }

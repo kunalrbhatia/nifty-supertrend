@@ -8,8 +8,9 @@ async function checkPrStatus() {
   try {
     logger.info('Watching PR checks...');
     execSync('gh pr checks --watch', { stdio: 'inherit' });
-  } catch (error: any) {
-    logger.error(`PR check failed: ${error.message}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`PR check failed: ${errorMessage}`);
   }
 }
 

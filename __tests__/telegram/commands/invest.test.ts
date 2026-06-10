@@ -1,10 +1,14 @@
+import { Context } from 'telegraf';
 import { investHandler } from '../../../src/telegram/commands/invest';
 import configStore from '../../../src/store/configStore';
 
 jest.mock('../../../src/store/configStore');
 
 describe('InvestCommand', () => {
-  let mockCtx: any;
+  let mockCtx: {
+    reply: jest.Mock;
+    message: { text: string };
+  };
 
   beforeEach(() => {
     mockCtx = {
@@ -18,7 +22,7 @@ describe('InvestCommand', () => {
     mockCtx.message.text = '/invest';
     jest.spyOn(configStore, 'getInvestmentAmount').mockReturnValue(10000);
 
-    await investHandler(mockCtx);
+    await investHandler(mockCtx as unknown as Context);
 
     expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('₹10000'));
   });
@@ -27,7 +31,7 @@ describe('InvestCommand', () => {
     mockCtx.message.text = '/invest 20000';
     const setSpy = jest.spyOn(configStore, 'setInvestmentAmount').mockImplementation();
 
-    await investHandler(mockCtx);
+    await investHandler(mockCtx as unknown as Context);
 
     expect(setSpy).toHaveBeenCalledWith(20000);
     expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('₹20000'));
@@ -35,7 +39,7 @@ describe('InvestCommand', () => {
 
   it('should handle invalid amount', async () => {
     mockCtx.message.text = '/invest abc';
-    await investHandler(mockCtx);
+    await investHandler(mockCtx as unknown as Context);
     expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('Invalid amount'));
   });
 });

@@ -13,7 +13,8 @@ export async function sendNotification(message: string): Promise<void> {
       text: message,
       parse_mode: 'Markdown',
     });
-  } catch (error: any) {
-    logger.error(`Failed to send Telegram notification: ${error.message}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Failed to send Telegram notification: ${errorMessage}`);
   }
 }

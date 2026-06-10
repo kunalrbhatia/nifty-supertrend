@@ -17,7 +17,7 @@ describe('HolidayCheck Helper', () => {
 
   it('should return false for weekends (Saturday)', async () => {
     const saturday = new Date('2024-06-08'); // Saturday
-    global.Date = jest.fn(() => saturday) as any;
+    global.Date = jest.fn(() => saturday) as unknown as DateConstructor;
 
     const result = await isTradingDay();
     expect(result).toBe(false);
@@ -25,7 +25,7 @@ describe('HolidayCheck Helper', () => {
 
   it('should return false for weekends (Sunday)', async () => {
     const sunday = new Date('2024-06-09'); // Sunday
-    global.Date = jest.fn(() => sunday) as any;
+    global.Date = jest.fn(() => sunday) as unknown as DateConstructor;
 
     const result = await isTradingDay();
     expect(result).toBe(false);
@@ -33,7 +33,7 @@ describe('HolidayCheck Helper', () => {
 
   it('should return false if today is an NSE holiday', async () => {
     const monday = new Date('2024-06-10'); // Monday
-    global.Date = jest.fn(() => monday) as any;
+    global.Date = jest.fn(() => monday) as unknown as DateConstructor;
 
     mockedAxios.get.mockResolvedValue({
       data: {
@@ -47,7 +47,7 @@ describe('HolidayCheck Helper', () => {
 
   it('should return true if today is a trading day', async () => {
     const monday = new Date('2024-06-10'); // Monday
-    global.Date = jest.fn(() => monday) as any;
+    global.Date = jest.fn(() => monday) as unknown as DateConstructor;
 
     mockedAxios.get.mockResolvedValue({
       data: {
@@ -61,7 +61,7 @@ describe('HolidayCheck Helper', () => {
 
   it('should return true and log error if API fails', async () => {
     const monday = new Date('2024-06-10');
-    global.Date = jest.fn(() => monday) as any;
+    global.Date = jest.fn(() => monday) as unknown as DateConstructor;
 
     mockedAxios.get.mockRejectedValue(new Error('API Down'));
 

@@ -2,7 +2,8 @@ import { Context } from 'telegraf';
 import configStore from '../../store/configStore.js';
 
 export async function investHandler(ctx: Context) {
-  const text = (ctx.message as any)?.text || '';
+  const message = ctx.message as { text?: string };
+  const text = message?.text || '';
   const args = text.split(' ').slice(1);
 
   if (args.length === 0) {
