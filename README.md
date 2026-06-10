@@ -4,20 +4,20 @@ A robust, fully automated carry-forward trading bot that accumulates `NIFTYBEES`
 
 ## How the Algorithm Works
 
-This bot implements a highly disciplined **Accumulation & Profit-Protected Exit** strategy. It operates entirely on closed daily candles (by running just before the market closes at 03:26 PM IST) to eliminate intraday noise.
+This bot implements a highly disciplined **Accumulation & Profit-Protected Exit** strategy. It operates entirely on closed daily candles (by running just before the market closes at 03:26 PM IST) to avoid intraday noise.
 
 ### 1. The Indicator (Nifty 50 Momentum)
-Instead of looking at the ETF itself, the bot calculates the **SuperTrend (10, 3)** directly on the **Nifty 50 Spot Index**. This ensures that trading decisions are based on the pure macroeconomic momentum of the top 50 Indian companies.
+Instead of looking at the ETF itself, the bot calculates the **SuperTrend (10, 3)** directly on the **Nifty 50 Spot Index**. This ensures that trading decisions are based on the pure macroeconomic momentum, not individual security volatility.
 
 ### 2. Accumulation (Averaging)
-Every time the Nifty 50 SuperTrend flips from **🔴 Red to 🟢 Green** (a Buy Signal), the bot automatically invests a fixed tranche of capital (default: ₹10,000) into `NIFTYBEES` (the Nifty 50 ETF). 
+Every time the Nifty 50 SuperTrend flips from **🔴 Red to 🟢 Green** (a Buy Signal), the bot automatically invests a fixed tranche of capital (default: ₹10,000) into `NIFTYBEES` (the Nifty 50 ETF).
 - If multiple Buy signals occur over months without a profitable exit, the bot will continue to average down or average up indefinitely.
 - The investment amount can be changed dynamically via Telegram using `/invest <amount>`.
 
 ### 3. Profit-Protected Exit
 When the Nifty 50 SuperTrend flips from **🟢 Green to 🔴 Red** (a Sell Signal), the bot evaluates the overall health of your accumulated `NIFTYBEES` position:
 - **Condition Met:** If the entire accumulated position is sitting at a **Minimum 1.0% Profit**, the bot will square off (sell) the entire quantity and reset its ledger.
-- **Condition Failed (Carry Forward):** If the position is in a loss or less than 1% profit, the bot ignores the sell signal. It will carry the position forward and wait for the next momentum cycle to average further.
+- **Condition Failed (Carry Forward):** If the position is in a loss or less than 1% profit, the bot ignores the sell signal. It will carry the position forward and wait for the next momentum cycle to close profitably.
 
 ---
 
@@ -56,8 +56,11 @@ When the Nifty 50 SuperTrend flips from **🟢 Green to 🔴 Red** (a Sell Signa
 - Telegram bot token + chat ID
 
 ### Local Setup
+
+> **⚠️ Important:** Fork this repository first before cloning. This allows you to manage your own environment variables and credentials securely in your forked repository.
+
 ```bash
-git clone <repo-url>
+git clone <your-forked-repo-url>
 cd nifty-supertrend
 pnpm install
 
@@ -104,7 +107,7 @@ npm install -g pnpm pm2
 ```
 3. Clone the repo and set up your `.env` file manually on the server.
 ```bash
-git clone <your-repo-url> ~/st-etf-algo
+git clone <your-forked-repo-url> ~/st-etf-algo
 cd ~/st-etf-algo
 pnpm install
 nano .env # Paste your credentials here
