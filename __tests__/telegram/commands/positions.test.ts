@@ -1,3 +1,4 @@
+import { Context } from 'telegraf';
 import { positionsHandler } from '../../../src/telegram/commands/positions';
 import holdingStore from '../../../src/store/holdingStore';
 import * as marketData from '../../../src/helpers/marketData';
@@ -6,7 +7,10 @@ jest.mock('../../../src/store/holdingStore');
 jest.mock('../../../src/helpers/marketData');
 
 describe('PositionsCommand', () => {
-  let mockCtx: any;
+  let mockCtx: {
+    replyWithMarkdown: jest.Mock;
+    reply: jest.Mock;
+  };
 
   beforeEach(() => {
     mockCtx = {
@@ -26,7 +30,7 @@ describe('PositionsCommand', () => {
     });
     jest.spyOn(marketData, 'getLtp').mockResolvedValue(260);
 
-    await positionsHandler(mockCtx);
+    await positionsHandler(mockCtx as unknown as Context);
 
     expect(mockCtx.replyWithMarkdown).toHaveBeenCalledWith('📭 *No active positions.*');
   });
@@ -41,7 +45,7 @@ describe('PositionsCommand', () => {
     });
     jest.spyOn(marketData, 'getLtp').mockResolvedValue(110);
 
-    await positionsHandler(mockCtx);
+    await positionsHandler(mockCtx as unknown as Context);
 
     expect(mockCtx.replyWithMarkdown).toHaveBeenCalledWith(expect.stringContaining('NIFTYBEES-EQ'));
     expect(mockCtx.replyWithMarkdown).toHaveBeenCalledWith(expect.stringContaining('Qty'));
@@ -59,14 +63,14 @@ describe('PositionsCommand', () => {
     });
     jest.spyOn(marketData, 'getLtp').mockResolvedValue(90);
 
-    await positionsHandler(mockCtx);
+    await positionsHandler(mockCtx as unknown as Context);
 
     expect(mockCtx.replyWithMarkdown).toHaveBeenCalledWith(expect.stringContaining('-10.00%'));
   });
 
   it('should handle errors gracefully', async () => {
     jest.spyOn(marketData, 'getLtp').mockRejectedValue(new Error('API Error'));
-    await positionsHandler(mockCtx);
+    await positionsHandler(mockCtx as unknown as Context);
     expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('API Error'));
   });
 });

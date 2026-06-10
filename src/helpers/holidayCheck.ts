@@ -2,6 +2,10 @@ import axios from 'axios';
 import logger from './logger.js';
 import { API_URLS } from './constants.js';
 
+interface TradingHoliday {
+  tradingDate: string;
+}
+
 /**
  * Checks if today is an NSE trading day.
  */
@@ -34,8 +38,8 @@ export async function isTradingDay(): Promise<boolean> {
       })
       .replace(/ /g, '-'); // e.g., "08-Jun-2026"
 
-    const holidays = response.data.trading || [];
-    const isHoliday = holidays.some((h: any) => h.tradingDate === todayStr);
+    const holidays = (response.data.trading as TradingHoliday[]) || [];
+    const isHoliday = holidays.some((h) => h.tradingDate === todayStr);
 
     if (isHoliday) {
       logger.info(`Today (${todayStr}) is an NSE holiday.`);
@@ -43,8 +47,9 @@ export async function isTradingDay(): Promise<boolean> {
     }
 
     return true;
-  } catch (error: any) {
-    logger.error(`Holiday check failed: ${error.message}. Assuming trading day.`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Holiday check failed: ${errorMessage}. Assuming trading day.`);
     return true; // Fallback to true if API fails
   }
 }

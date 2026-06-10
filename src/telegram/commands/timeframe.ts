@@ -3,7 +3,8 @@ import configStore from '../../store/configStore.js';
 import { TIMEFRAMES } from '../../helpers/constants.js';
 
 export async function timeframeHandler(ctx: Context) {
-  const text = (ctx.message as any)?.text || '';
+  const message = ctx.message as { text?: string };
+  const text = message?.text || '';
   const args = text.split(' ').slice(1);
 
   if (args.length === 0) {

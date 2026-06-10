@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import logger from '../helpers/logger.js';
 
 const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
 const validPrefixes = [
@@ -21,12 +22,12 @@ if (branchName === 'master' || branchName === 'main') {
 }
 
 if (!branchRegex.test(branchName)) {
-  console.error(`❌ Invalid branch name: "${branchName}"`);
-  console.error(`Branch names must follow conventional format: <type>/<description>`);
-  console.error(`Allowed types: ${validPrefixes.join(', ')}`);
-  console.error(`Example: feat/add-logging`);
+  logger.error(`❌ Invalid branch name: "${branchName}"`);
+  logger.error(`Branch names must follow conventional format: <type>/<description>`);
+  logger.error(`Allowed types: ${validPrefixes.join(', ')}`);
+  logger.error(`Example: feat/add-logging`);
   process.exit(1);
 }
 
-console.log('✅ Branch name is valid.');
+logger.info('✅ Branch name is valid.');
 process.exit(0);

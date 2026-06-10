@@ -42,8 +42,9 @@ export async function placeOrder(
       const errorMsg = response.data.message || 'Order failed';
       throw new Error(errorMsg);
     }
-  } catch (error: any) {
-    const errorMsg = `❌ *ORDER ERROR:* Failed to place ${action} order.\nError: ${error.message}`;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorMsg = `❌ *ORDER ERROR:* Failed to place ${action} order.\nError: ${errorMessage}`;
     logger.error(errorMsg);
     await sendNotification(errorMsg);
     throw error;

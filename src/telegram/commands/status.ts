@@ -38,7 +38,8 @@ Invested: ₹${holdings.totalInvestment.toFixed(2)}
 P&L: ${pnl}%`;
 
     await ctx.replyWithMarkdown(message);
-  } catch (error: any) {
-    await ctx.reply(`Error fetching status: ${error.message}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    await ctx.reply(`Error fetching status: ${errorMessage}`);
   }
 }

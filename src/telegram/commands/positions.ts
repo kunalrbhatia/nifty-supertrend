@@ -29,7 +29,8 @@ export async function positionsHandler(ctx: Context) {
 *P&L:* ${pnlAmt >= 0 ? '🟢' : '🔴'} ₹${pnlAmt.toFixed(2)} (${pnlPct.toFixed(2)}%)`;
 
     await ctx.replyWithMarkdown(message);
-  } catch (error: any) {
-    await ctx.reply(`Error fetching positions: ${error.message}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    await ctx.reply(`Error fetching positions: ${errorMessage}`);
   }
 }

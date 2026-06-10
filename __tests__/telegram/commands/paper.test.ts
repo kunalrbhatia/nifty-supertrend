@@ -1,10 +1,13 @@
+import { Context } from 'telegraf';
 import { paperHandler } from '../../../src/telegram/commands/paper';
 import * as modeManager from '../../../src/helpers/modeManager';
 
 jest.mock('../../../src/helpers/modeManager');
 
 describe('PaperCommand', () => {
-  let mockCtx: any;
+  let mockCtx: {
+    reply: jest.Mock;
+  };
 
   beforeEach(() => {
     mockCtx = {
@@ -17,7 +20,7 @@ describe('PaperCommand', () => {
     jest.spyOn(modeManager, 'isPaperMode').mockReturnValue(false);
     const setSpy = jest.spyOn(modeManager, 'setPaperMode').mockImplementation();
 
-    await paperHandler(mockCtx);
+    await paperHandler(mockCtx as unknown as Context);
 
     expect(setSpy).toHaveBeenCalledWith(true);
     expect(mockCtx.reply).toHaveBeenCalledWith(

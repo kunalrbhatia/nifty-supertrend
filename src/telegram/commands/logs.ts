@@ -29,7 +29,8 @@ export async function logsHandler(ctx: Context) {
       const content = fs.readFileSync(lastFile, 'utf-8').split('\n').slice(-20).join('\n');
       return await ctx.reply(`\`\`\`\n${content}\n\`\`\``, { parse_mode: 'Markdown' });
     }
-  } catch (error: any) {
-    await ctx.reply(`Failed to fetch logs: ${error.message}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    await ctx.reply(`Failed to fetch logs: ${errorMessage}`);
   }
 }

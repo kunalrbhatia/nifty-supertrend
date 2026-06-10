@@ -6,17 +6,7 @@ const HOLDINGS_FILE = path.join(process.cwd(), 'data/holdings.json');
 
 describe('HoldingStore', () => {
   beforeEach(() => {
-    if (fs.existsSync(HOLDINGS_FILE)) {
-      fs.unlinkSync(HOLDINGS_FILE);
-    }
-    // Reset singleton state manually for tests
-    (holdingStore as any).state = {
-      totalQuantity: 0,
-      averagePrice: 0,
-      totalInvestment: 0,
-      lastSignal: 'NONE',
-      trades: [],
-    };
+    holdingStore.reset();
   });
 
   afterAll(() => {

@@ -19,6 +19,7 @@ jest.mock('../../src/helpers/logger');
 describe('stScanner Job', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    configStore.reset();
   });
 
   it('should skip if it is not a trading day', async () => {
