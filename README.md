@@ -72,9 +72,11 @@ The bot features an interactive Telegram interface to control the algorithm on t
 | `/positions` | Shows detailed breakdown of current holdings and total P&L. |
 | `/timeframe <val>` | Changes the SuperTrend calculation interval (e.g., `/timeframe 1h`, `/timeframe 1d`). |
 | `/invest <amt>` | Updates the ₹ tranche size invested per Buy signal (e.g., `/invest 20000`). |
+| `/force_invest` | Manually trigger a buy order for 1 tranche of NIFTYBEES instantly. |
 | `/paper` | Toggles between LIVE and PAPER trading modes instantly. |
 | `/update` | Manually forces a refresh of the Angel One Scrip Master JSON. |
 | `/logs` | Fetches the last 20-25 lines of logs (Supports both PM2 and File fallback). |
+| `/help` | Displays a detailed list of all available commands and their usage. |
 
 ---
 

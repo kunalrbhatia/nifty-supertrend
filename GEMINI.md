@@ -51,6 +51,17 @@ ST-ETF Algo is a robust, fully automated algorithmic trading bot designed for ca
 2. **03:26 PM IST:** Market Scanner (`stScanner`) runs to check signals and manage positions.
 3. **Session Management:** The API wrapper automatically handles session re-login on `AG8001`/`401` errors.
 
+## Interactive Telegram Commands
+- `/status`: Current strategy status, Trend, LTP, P&L.
+- `/positions`: Detailed holdings breakdown.
+- `/invest <amt>`: Set tranche investment amount.
+- `/force_invest`: Manually trigger 1 tranche buy.
+- `/timeframe <val>`: Change SuperTrend timeframe.
+- `/paper`: Toggle Live/Paper mode.
+- `/logs`: Fetch server logs.
+- `/update`: Manual scrip master refresh.
+- `/help`: Detailed command help.
+
 ## Directory Structure Highlights
 - `src/jobs/`: Core strategy execution logic.
 - `src/store/`: Singleton state management with file persistence.

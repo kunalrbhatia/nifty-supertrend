@@ -8,6 +8,8 @@ import { paperHandler } from './commands/paper.js';
 import { updateHandler } from './commands/update.js';
 import { investHandler } from './commands/invest.js';
 import { timeframeHandler } from './commands/timeframe.js';
+import { forceInvestHandler } from './commands/force_invest.js';
+import { helpHandler } from './commands/help.js';
 
 const bot = new Telegraf(config.TELEGRAM_BOT_TOKEN);
 
@@ -27,6 +29,8 @@ bot.command('paper', paperHandler);
 bot.command('update', updateHandler);
 bot.command('invest', investHandler);
 bot.command('timeframe', timeframeHandler);
+bot.command('force_invest', forceInvestHandler);
+bot.command('help', helpHandler);
 
 export async function startBot(): Promise<void> {
   bot.launch();
