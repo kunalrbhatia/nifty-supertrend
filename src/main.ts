@@ -19,7 +19,7 @@ async function bootstrap() {
     // 3. Login to SmartAPI
     await login();
 
-    // 4. Register Cron Job (03:26 PM IST)
+    // 4. Register Algo Cron (03:26 PM IST)
     cron.schedule(
       '26 15 * * 1-5',
       async () => {

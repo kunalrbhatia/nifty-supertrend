@@ -1,8 +1,9 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 import { config } from '../config/env.js';
 import sessionStore from '../store/sessionStore.js';
 import { API_URLS } from './constants.js';
 import logger from './logger.js';
+import { login } from './login.js';
 
 /**
  * Generic axios wrapper with auth headers and automatic retry.
@@ -10,6 +11,9 @@ import logger from './logger.js';
 const api = axios.create({
   baseURL: API_URLS.SMART_API_BASE,
 });
+
+// To prevent infinite loop if login itself fails
+let isRefreshing = false;
 
 api.interceptors.request.use((req) => {
   const { jwtToken } = sessionStore.get();
@@ -35,14 +39,66 @@ api.interceptors.request.use((req) => {
 
 // Response interceptor for error handling and logging
 api.interceptors.response.use(
-  (response) => {
+  async (response) => {
+    const originalRequest = response.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
     if (response.data && response.data.status === false) {
-      logger.error(`API Error: ${response.data.message} (Code: ${response.data.errorcode})`);
+      const errorCode = response.data.errorcode;
+
+      // AG8001 is "Invalid Token" or "Token Expired"
+      if (
+        (errorCode === 'AG8001' || errorCode === 'AB1010') &&
+        !originalRequest._retry &&
+        !isRefreshing
+      ) {
+        originalRequest._retry = true;
+        isRefreshing = true;
+
+        try {
+          logger.info('Session expired, attempting automatic re-login...');
+          await login();
+          isRefreshing = false;
+
+          // Update the token in the original request and retry
+          const { jwtToken } = sessionStore.get();
+          if (originalRequest.headers) {
+            originalRequest.headers['Authorization'] = `Bearer ${jwtToken}`;
+          }
+          return api(originalRequest);
+        } catch (loginError) {
+          isRefreshing = false;
+          logger.error('Automatic re-login failed');
+          throw loginError;
+        }
+      }
+
+      logger.error(`API Error: ${response.data.message} (Code: ${errorCode})`);
       throw new Error(response.data.message);
     }
     return response;
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+    // Handle 401 Unauthorized via HTTP status as well
+    if (error.response?.status === 401 && !originalRequest._retry && !isRefreshing) {
+      originalRequest._retry = true;
+      isRefreshing = true;
+      try {
+        logger.info('HTTP 401 detected, attempting automatic re-login...');
+        await login();
+        isRefreshing = false;
+        const { jwtToken } = sessionStore.get();
+        if (originalRequest.headers) {
+          originalRequest.headers['Authorization'] = `Bearer ${jwtToken}`;
+        }
+        return api(originalRequest);
+      } catch (loginError) {
+        isRefreshing = false;
+        throw loginError;
+      }
+    }
+
     logger.error(
       `HTTP Error details: config URL=${error.config?.url}, data=${error.config?.data}, response=${error.response?.status} ${error.response?.statusText}`
     );

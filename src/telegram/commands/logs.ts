@@ -5,32 +5,48 @@ import path from 'path';
 import logger from '../../helpers/logger.js';
 
 export async function logsHandler(ctx: Context) {
+  let logsContent = '';
+  let source = 'PM2';
+
   try {
-    // 1. Try PM2 logs
-    const pm2Logs = execSync('pm2 logs st-etf-algo --lines 20 --no-colors').toString();
-    if (pm2Logs) {
-      return await ctx.reply(`\`\`\`\n${pm2Logs}\n\`\`\``, { parse_mode: 'Markdown' });
+    // 1. Try PM2 logs (removing --no-colors as it fails on some Windows/PM2 setups)
+    const pm2Logs = execSync('pm2 logs st-etf-algo --lines 20').toString();
+    if (pm2Logs && pm2Logs.trim()) {
+      logsContent = pm2Logs;
     }
   } catch (error) {
     logger.info('PM2 logs command failed, falling back to file logs');
   }
 
-  // 2. Fallback to file logs
-  try {
-    const logsDir = path.join(process.cwd(), 'logs');
-    const files = fs
-      .readdirSync(logsDir)
-      .filter((f) => f.endsWith('.log'))
-      .sort()
-      .reverse();
+  // 2. Fallback to file logs if PM2 failed or returned empty
+  if (!logsContent) {
+    source = 'File';
+    try {
+      const logsDir = path.join(process.cwd(), 'logs');
+      if (fs.existsSync(logsDir)) {
+        const files = fs
+          .readdirSync(logsDir)
+          .filter((f) => f.endsWith('.log'))
+          .sort()
+          .reverse();
 
-    if (files.length > 0) {
-      const lastFile = path.join(logsDir, files[0]);
-      const content = fs.readFileSync(lastFile, 'utf-8').split('\n').slice(-20).join('\n');
-      return await ctx.reply(`\`\`\`\n${content}\n\`\`\``, { parse_mode: 'Markdown' });
+        if (files.length > 0) {
+          const lastFile = path.join(logsDir, files[0]);
+          logsContent = fs.readFileSync(lastFile, 'utf-8').split('\n').slice(-25).join('\n');
+        }
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return await ctx.reply(`Failed to fetch file logs: ${errorMessage}`);
     }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    await ctx.reply(`Failed to fetch logs: ${errorMessage}`);
+  }
+
+  if (logsContent) {
+    const header = `📋 *Last 20-25 lines (${source}):*\n`;
+    return await ctx.reply(`${header}\`\`\`\n${logsContent}\n\`\`\``, {
+      parse_mode: 'Markdown',
+    });
+  } else {
+    return await ctx.reply('No logs found.');
   }
 }
