@@ -11,9 +11,9 @@ describe('LogsCommand', () => {
   };
 
   beforeEach(() => {
-    mockCtx = { 
+    mockCtx = {
       reply: jest.fn(),
-      replyWithMarkdown: jest.fn() 
+      replyWithMarkdown: jest.fn(),
     };
     jest.clearAllMocks();
     // Default mock for access to pass
@@ -23,7 +23,7 @@ describe('LogsCommand', () => {
   it('should return recent logs from file', async () => {
     const mockFiles = ['st-etf-2026-06-12.log', 'st-etf-2026-06-11.log'];
     const mockContent = 'line 1\nline 2\nline 3';
-    
+
     (fs.readdir as jest.Mock).mockResolvedValue(mockFiles);
     (fs.readFile as jest.Mock).mockResolvedValue(mockContent);
 
@@ -61,6 +61,8 @@ describe('LogsCommand', () => {
 
     await logsHandler(mockCtx as unknown as Context);
 
-    expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('Failed to fetch logs: Read failed'));
+    expect(mockCtx.reply).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to fetch logs: Read failed')
+    );
   });
 });
