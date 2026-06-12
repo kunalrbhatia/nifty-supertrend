@@ -1,53 +1,66 @@
 import { Context } from 'telegraf';
 import { logsHandler } from '../../../src/telegram/commands/logs';
-import * as child_process from 'child_process';
-import fs from 'fs';
+import fs from 'fs/promises';
 
-jest.mock('child_process');
+jest.mock('fs/promises');
 
 describe('LogsCommand', () => {
   let mockCtx: {
     reply: jest.Mock;
+    replyWithMarkdown: jest.Mock;
   };
 
   beforeEach(() => {
-    mockCtx = { reply: jest.fn() };
+    mockCtx = { 
+      reply: jest.fn(),
+      replyWithMarkdown: jest.fn() 
+    };
     jest.clearAllMocks();
+    // Default mock for access to pass
+    (fs.access as jest.Mock).mockResolvedValue(undefined);
   });
 
-  it('should return PM2 logs if available', async () => {
-    jest.spyOn(child_process, 'execSync').mockReturnValue(Buffer.from('pm2 logs output'));
+  it('should return recent logs from file', async () => {
+    const mockFiles = ['st-etf-2026-06-12.log', 'st-etf-2026-06-11.log'];
+    const mockContent = 'line 1\nline 2\nline 3';
+    
+    (fs.readdir as jest.Mock).mockResolvedValue(mockFiles);
+    (fs.readFile as jest.Mock).mockResolvedValue(mockContent);
+
     await logsHandler(mockCtx as unknown as Context);
+
     expect(mockCtx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('pm2 logs output'),
+      expect.stringContaining('Last 25 lines from st-etf-2026-06-12.log'),
+      expect.objectContaining({ parse_mode: 'Markdown' })
+    );
+    expect(mockCtx.reply).toHaveBeenCalledWith(
+      expect.stringContaining('line 1\nline 2\nline 3'),
       expect.any(Object)
     );
   });
 
-  it('should fallback to file logs if PM2 fails', async () => {
-    jest.spyOn(child_process, 'execSync').mockImplementation(() => {
-      throw new Error('fail');
-    });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    jest.spyOn(fs, 'readdirSync').mockReturnValue(['st-etf-2024-06-10.log'] as any);
-    jest.spyOn(fs, 'readFileSync').mockReturnValue('file log output1\nfile log output2');
+  it('should handle missing logs directory', async () => {
+    (fs.access as jest.Mock).mockRejectedValue(new Error('Directory not found'));
 
     await logsHandler(mockCtx as unknown as Context);
-    expect(mockCtx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('file log output'),
-      expect.any(Object)
-    );
+
+    expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('Logs directory not found'));
   });
 
-  it('should handle errors gracefully', async () => {
-    jest.spyOn(child_process, 'execSync').mockImplementation(() => {
-      throw new Error('fail');
-    });
-    jest.spyOn(fs, 'readdirSync').mockImplementation(() => {
-      throw new Error('FS error');
-    });
+  it('should handle no log files found', async () => {
+    (fs.readdir as jest.Mock).mockResolvedValue([]);
 
     await logsHandler(mockCtx as unknown as Context);
-    expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('FS error'));
+
+    expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('No log files found'));
+  });
+
+  it('should handle read errors gracefully', async () => {
+    (fs.readdir as jest.Mock).mockResolvedValue(['st-etf-2026-06-12.log']);
+    (fs.readFile as jest.Mock).mockRejectedValue(new Error('Read failed'));
+
+    await logsHandler(mockCtx as unknown as Context);
+
+    expect(mockCtx.reply).toHaveBeenCalledWith(expect.stringContaining('Failed to fetch logs: Read failed'));
   });
 });
