@@ -27,7 +27,7 @@ export async function placeOrder(
       transactiontype: action,
       exchange: CONSTANTS.EXCHANGE,
       ordertype: 'MARKET',
-      producttype: 'CNC',
+      producttype: 'DELIVERY',
       duration: 'DAY',
       quantity: quantity.toString(),
     });

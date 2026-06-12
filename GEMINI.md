@@ -62,6 +62,9 @@ ST-ETF Algo is a robust, fully automated algorithmic trading bot designed for ca
 - `/update`: Manual scrip master refresh.
 - `/help`: Detailed command help.
 
+## Angel One SmartAPI Quirks
+- **Order Types:** When placing equity carry-forward (cash and carry) orders, the `producttype` must be exactly `DELIVERY`. Do **not** use `CNC` (which is standard on other brokers), as it will result in an HTTP 400 Bad Request error.
+
 ## Directory Structure Highlights
 - `src/jobs/`: Core strategy execution logic.
 - `src/store/`: Singleton state management with file persistence.
