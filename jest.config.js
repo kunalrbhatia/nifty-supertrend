@@ -1,23 +1,20 @@
 export default {
-  preset: 'ts-jest',
   testEnvironment: 'node',
+  transform: {
+    '^.+\\.(t|j)sx?$': 'babel-jest',
+  },
+  transformIgnorePatterns: [
+    '/node_modules/(?!otplib|@otplib|@scure|@noble|node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill)/',
+  ],
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
-  transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        useESM: true,
-      },
-    ],
-  },
   coverageThreshold: {
     global: {
-      lines: 75,
-      functions: 75,
       branches: 70,
+      functions: 75,
+      lines: 75,
       statements: 75,
     },
   },
@@ -30,7 +27,4 @@ export default {
     'src/helpers/api.ts'
   ],
   setupFiles: ['./jest.setup.js'],
-  transformIgnorePatterns: [
-    'node_modules/(?!(@scure|otplib|@otplib|@noble|node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill)/.*)'
-  ]
 };
