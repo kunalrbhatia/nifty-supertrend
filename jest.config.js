@@ -31,6 +31,6 @@ export default {
   ],
   setupFiles: ['./jest.setup.js'],
   transformIgnorePatterns: [
-    "node_modules/(?!(@scure|otplib|@otplib)/)"
+    'node_modules/(?!(\\.pnpm|@scure|otplib|@otplib|@noble|node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill)/)'
   ]
 };
