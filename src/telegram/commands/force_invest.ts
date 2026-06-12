@@ -15,8 +15,10 @@ export async function forceInvestHandler(ctx: Context) {
     const qty = Math.floor(investmentAmt / beesLtp);
 
     if (qty > 0) {
-      await ctx.reply(`🟢 Forcing investment of ₹${investmentAmt} in NIFTYBEES (Qty: ${qty}) @ ₹${beesLtp}`);
-      
+      await ctx.reply(
+        `🟢 Forcing investment of ₹${investmentAmt} in NIFTYBEES (Qty: ${qty}) @ ₹${beesLtp}`
+      );
+
       await placeOrder('BUY', qty);
       holdingStore.addBuy(qty, beesLtp);
 
@@ -32,7 +34,9 @@ Total Qty: ${newHoldings.totalQuantity}`;
       await ctx.replyWithMarkdown(message);
       logger.info(`Forced investment executed: ${qty} units @ ₹${beesLtp}`);
     } else {
-      await ctx.reply(`⚠️ Cannot invest: Tranche amount (₹${investmentAmt}) is less than LTP (₹${beesLtp}).`);
+      await ctx.reply(
+        `⚠️ Cannot invest: Tranche amount (₹${investmentAmt}) is less than LTP (₹${beesLtp}).`
+      );
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

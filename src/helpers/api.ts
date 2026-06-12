@@ -46,7 +46,11 @@ api.interceptors.response.use(
       const errorCode = response.data.errorcode;
 
       // AG8001 is "Invalid Token" or "Token Expired"
-      if ((errorCode === 'AG8001' || errorCode === 'AB1010') && !originalRequest._retry && !isRefreshing) {
+      if (
+        (errorCode === 'AG8001' || errorCode === 'AB1010') &&
+        !originalRequest._retry &&
+        !isRefreshing
+      ) {
         originalRequest._retry = true;
         isRefreshing = true;
 
