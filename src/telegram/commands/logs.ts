@@ -9,13 +9,15 @@ export async function logsHandler(ctx: Context) {
   let source = 'PM2';
 
   try {
-    // 1. Try PM2 logs (removing --no-colors as it fails on some Windows/PM2 setups)
-    const pm2Logs = execSync('pm2 logs st-etf-algo --lines 20').toString();
+    // 1. Try PM2 logs
+    // --raw is better than --no-colors as it's more standard across PM2 versions for clean output
+    const pm2Logs = execSync('pm2 logs st-etf-algo --lines 20 --raw').toString();
     if (pm2Logs && pm2Logs.trim()) {
       logsContent = pm2Logs;
     }
   } catch (error) {
-    logger.info('PM2 logs command failed, falling back to file logs');
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.info(`PM2 logs command failed: ${errorMessage}. Falling back to file logs`);
   }
 
   // 2. Fallback to file logs if PM2 failed or returned empty
