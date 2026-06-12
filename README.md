@@ -19,31 +19,8 @@ When the Nifty 50 SuperTrend flips from **🟢 Green to 🔴 Red** (a Sell Signa
 - **Condition Met:** If the entire accumulated position is sitting at a **Minimum 1.0% Profit**, the bot will square off (sell) the entire quantity and reset its ledger.
 - **Condition Failed (Carry Forward):** If the position is in a loss or less than 1% profit, the bot ignores the sell signal. It will carry the position forward and wait for the next momentum cycle to average further.
 
----
-
-## Real Trade Examples
-
-### Example 1: The Clean Swing (Single Tranche)
-1. **Jan 10:** Nifty 50 SuperTrend turns 🟢 Green. 
-   - Bot invests ₹10,000 in NIFTYBEES @ ₹250 (Qty: 40).
-2. **Feb 15:** Nifty rockets upward. SuperTrend eventually turns 🔴 Red.
-   - Current NIFTYBEES Price: ₹275.
-   - P&L Calculation: `(275 - 250) / 250 = +10%`.
-   - **Result:** Profit is > 1%. Bot sells all 40 shares. Target met.
-
-### Example 2: The Choppy Market (Averaging & Carry Forward)
-1. **Mar 01:** Nifty 50 ST turns 🟢 Green.
-   - Bot invests ₹10,000 in NIFTYBEES @ ₹250 (Qty: 40). Avg Price: ₹250.
-2. **Mar 15:** Market drops. Nifty 50 ST turns 🔴 Red. 
-   - NIFTYBEES Price: ₹240. P&L is -4%.
-   - **Result:** Profit < 1%. Bot logs a "Hold" message and carries the position forward.
-3. **Apr 05:** Market recovers slightly. Nifty 50 ST turns 🟢 Green again.
-   - Bot invests another ₹10,000 in NIFTYBEES @ ₹245 (Qty: 40). 
-   - New Avg Price: `(10000 + 9800) / 80` = ₹247.50.
-4. **May 10:** Massive bull run. Nifty 50 ST turns 🔴 Red.
-   - NIFTYBEES Price: ₹270.
-   - P&L Calculation: `(270 - 247.50) / 247.50 = +9.0%`.
-   - **Result:** Profit > 1%. Bot sells all 80 shares.
+### 4. Session Resilience
+The bot features **Automatic Session Re-login**. If the Angel One SmartAPI session expires (Error `AG8001` or `401`), the API wrapper automatically refreshes the TOTP-based session and retries the request without interrupting the strategy.
 
 ---
 
@@ -74,6 +51,17 @@ pnpm dev
 
 ---
 
+## Daily Maintenance (Recommended)
+
+To keep the system fresh, it is recommended to run a daily maintenance task at **08:30 AM IST**. This task performs a fresh build, updates the scrip master, and restarts the process.
+
+Add this to your server's crontab (`crontab -e`):
+```bash
+30 8 * * * cd /path/to/project && /path/to/pnpm run maintenance >> /path/to/project/logs/maintenance.log 2>&1
+```
+
+---
+
 ## Telegram Commands
 
 The bot features an interactive Telegram interface to control the algorithm on the fly:
@@ -86,7 +74,7 @@ The bot features an interactive Telegram interface to control the algorithm on t
 | `/invest <amt>` | Updates the ₹ tranche size invested per Buy signal (e.g., `/invest 20000`). |
 | `/paper` | Toggles between LIVE and PAPER trading modes instantly. |
 | `/update` | Manually forces a refresh of the Angel One Scrip Master JSON. |
-| `/logs` | Fetches the last 20 lines of server logs right to your phone. |
+| `/logs` | Fetches the last 20-25 lines of logs (Supports both PM2 and File fallback). |
 
 ---
 
