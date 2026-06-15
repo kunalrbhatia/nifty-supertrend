@@ -7,7 +7,7 @@ ST-ETF Algo is a robust, fully automated algorithmic trading bot designed for ca
 - **Runtime:** Node.js >= 22 LTS (ES Modules)
 - **Language:** TypeScript (Strict mode)
 - **Strategy:** SuperTrend (10,3) on Nifty 50 Spot -> Execute on NIFTYBEES.
-- **Persistence:** Local JSON stores (`data/holdings.json`, `data/config.json`) for cost basis and dynamic settings.
+- **Persistence:** Local JSON stores (`data/holdings.json`, `data/config.json`, `data/session.json`) for cost basis, dynamic settings, and session tokens.
 - **Broker:** Angel One SmartAPI with TOTP-based authentication.
 - **Interface:** Interactive Telegram Bot (`telegraf`) for status monitoring and control.
 - **Deployment:** PM2 managed on Oracle Cloud Ubuntu instance.
@@ -24,7 +24,8 @@ ST-ETF Algo is a robust, fully automated algorithmic trading bot designed for ca
 - **Typecheck:** `npm run typecheck` (TSC no-emit)
 - **Verify:** `npm run verify` (Typecheck -> Lint -> Test -> Build)
 - **Update Scrip Master:** `npm run update-scrip` (Manual refresh of Angel One tokens)
-- **Daily Maintenance:** `npm run maintenance` (Build -> Update Scrip -> PM2 Restart)
+- **Init Algo:** `npm run init-algo` (Login and connection health check)
+- **Daily Maintenance:** `npm run maintenance` (Build -> Update Scrip -> PM2 Restart -> Init Algo)
 
 ## Development Conventions
 
@@ -47,7 +48,7 @@ ST-ETF Algo is a robust, fully automated algorithmic trading bot designed for ca
 - **Validation:** Use `gh pr checks` (or `npm run pr-status`) to monitor CI status.
 
 ## Daily Operations Cycle
-1. **08:30 AM IST:** Daily Maintenance (Build, Scrip Update, PM2 Restart) triggered via system crontab.
+1. **08:30 AM IST:** Daily Maintenance (Build, Scrip Update, PM2 Restart, Init Algo) triggered via system crontab.
 2. **03:26 PM IST:** Market Scanner (`stScanner`) runs to check signals and manage positions.
 3. **Session Management:** The API wrapper automatically handles session re-login on `AG8001`/`401` errors.
 

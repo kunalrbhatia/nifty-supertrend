@@ -19,6 +19,7 @@
     "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
     "pr-status": "gh pr checks --watch",
     "update-scrip": "tsx src/scripts/updateScripMaster.ts",
+    "init-algo": "tsx src/scripts/initAlgo.ts",
     "maintenance": "tsx src/scripts/maintenance.ts",
     "commit": "git cz"
   },
