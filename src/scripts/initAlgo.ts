@@ -19,7 +19,7 @@ async function initAlgo() {
 
     // 2. Health Check: Fetch LTP for Nifty 50 and NIFTYBEES
     logger.info('Performing health check (LTP fetch)...');
-    
+
     // Fetch Nifty 50 LTP
     const n50Ltp = await getLtp(CONSTANTS.NIFTY50_TOKEN, CONSTANTS.EXCHANGE);
     logger.info(`Nifty 50 LTP: ₹${n50Ltp}`);

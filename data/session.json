@@ -1,0 +1,5 @@
+{
+  "jwtToken": "jwt",
+  "refreshToken": "refresh",
+  "feedToken": "feed"
+}

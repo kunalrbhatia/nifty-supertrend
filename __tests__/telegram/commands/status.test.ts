@@ -1,10 +1,12 @@
 import { Context } from 'telegraf';
 import { statusHandler } from '../../../src/telegram/commands/status';
 import holdingStore from '../../../src/store/holdingStore';
+import configStore from '../../../src/store/configStore';
 import * as marketData from '../../../src/helpers/marketData';
 import * as modeManager from '../../../src/helpers/modeManager';
 
 jest.mock('../../../src/store/holdingStore');
+jest.mock('../../../src/store/configStore');
 jest.mock('../../../src/helpers/marketData');
 jest.mock('../../../src/helpers/modeManager');
 
@@ -30,6 +32,7 @@ describe('StatusCommand', () => {
       lastSignal: 'BUY',
       trades: [],
     });
+    jest.spyOn(configStore, 'getTimeframe').mockReturnValue('ONE_DAY');
     jest.spyOn(marketData, 'getLtp').mockResolvedValue(260);
     jest
       .spyOn(marketData, 'getCandles')
