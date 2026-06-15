@@ -24,7 +24,11 @@ async function runMaintenance() {
     logger.info('Restarting PM2 process...');
     execSync('pm2 restart ecosystem.config.cjs', { stdio: 'inherit' });
 
-    logger.info('Daily maintenance completed successfully.');
+    // 4. Algo Initialization & Health Check
+    logger.info('Initializing algo and performing health check...');
+    execSync('npm run init-algo', { stdio: 'inherit' });
+
+    logger.info('Daily maintenance and initialization completed successfully.');
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logger.error(`Maintenance failed: ${errorMessage}`);
