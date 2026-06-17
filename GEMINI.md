@@ -53,6 +53,7 @@ ST-ETF Algo is a robust, fully automated algorithmic trading bot designed for ca
 3. **Session Management:** The API wrapper automatically handles session re-login on `AG8001`/`401` errors.
 
 ## Interactive Telegram Commands
+- **Note:** If Telegram is banned or unreachable, set `TELEGRAM_ENABLED=false` in `.env` to disable integration and prevent connection errors.
 - `/status`: Current strategy status, Trend, LTP, P&L.
 - `/positions`: Detailed holdings breakdown.
 - `/invest <amt>`: Set tranche investment amount.
