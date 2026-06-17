@@ -33,12 +33,23 @@ bot.command('force_invest', forceInvestHandler);
 bot.command('help', helpHandler);
 
 export async function startBot(): Promise<void> {
-  bot.launch();
-  logger.info('Telegram Bot started');
+  if (!config.TELEGRAM_ENABLED) {
+    logger.warn('Telegram Bot is disabled via config');
+    return;
+  }
 
-  // Graceful stop
-  process.once('SIGINT', () => bot.stop('SIGINT'));
-  process.once('SIGTERM', () => bot.stop('SIGTERM'));
+  try {
+    await bot.launch();
+    logger.info('Telegram Bot started');
+
+    // Graceful stop
+    process.once('SIGINT', () => bot.stop('SIGINT'));
+    process.once('SIGTERM', () => bot.stop('SIGTERM'));
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Failed to launch Telegram Bot: ${errorMessage}`);
+    logger.warn('Proceeding without Telegram Bot...');
+  }
 }
 
 export default bot;

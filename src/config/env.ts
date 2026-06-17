@@ -13,6 +13,10 @@ const envSchema = z.object({
   CLIENT_TOTP_PIN: z.string(),
   TELEGRAM_BOT_TOKEN: z.string(),
   TELEGRAM_CHAT_ID: z.string(),
+  TELEGRAM_ENABLED: z
+    .string()
+    .default('true')
+    .transform((v) => v === 'true'),
 });
 
 const parsed = envSchema.safeParse(process.env);
