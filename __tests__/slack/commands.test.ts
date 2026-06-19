@@ -223,6 +223,28 @@ describe('Slack Commands Middleware and Handlers', () => {
       });
     });
 
+    it('should process check command and send back reply', async () => {
+      (statusHandler as jest.Mock).mockImplementation(async (ctx) => {
+        await ctx.reply('Mocked Status Check');
+      });
+
+      mockReq = {
+        body: {
+          command: '/check',
+          text: '',
+          response_url: 'http://slack.webhook',
+        },
+      };
+
+      await handleSlackCommand(mockReq as Request, mockRes as Response);
+
+      expect(statusHandler).toHaveBeenCalled();
+      expect(mockRes.json).toHaveBeenCalledWith({
+        response_type: 'ephemeral',
+        text: 'Mocked Status Check',
+      });
+    });
+
     it('should send async replies to response_url', async () => {
       let savedCtx!: Context;
       (statusHandler as jest.Mock).mockImplementation(async (ctx) => {

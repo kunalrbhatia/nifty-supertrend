@@ -70,6 +70,7 @@ export function verifySlackSignature(req: SlackRequest, res: Response, next: Nex
 
 const handlersMap: Record<string, (ctx: Context) => Promise<unknown>> = {
   status: statusHandler,
+  check: statusHandler,
   pnl: statusHandler,
   positions: positionsHandler,
   logs: logsHandler,
