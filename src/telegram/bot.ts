@@ -23,6 +23,7 @@ bot.use(async (ctx, next) => {
 
 // Command registration
 bot.command('status', statusHandler);
+bot.command('check', statusHandler);
 bot.command('positions', positionsHandler);
 bot.command('logs', logsHandler);
 bot.command('paper', paperHandler);
