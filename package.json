@@ -16,7 +16,7 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "prepare": "husky install",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "verify": "pnpm format:check && pnpm typecheck && pnpm lint && pnpm test && pnpm build",
     "pr-status": "gh pr checks --watch",
     "update-scrip": "tsx src/scripts/updateScripMaster.ts",
     "init-algo": "tsx src/scripts/initAlgo.ts",
