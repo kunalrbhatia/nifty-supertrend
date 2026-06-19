@@ -85,7 +85,7 @@ The bot features an interactive Telegram interface to control the algorithm on t
 
 ## Oracle Cloud Free Tier Deployment (Automated)
 
-This repository includes a fully automated CI/CD pipeline (`.github/workflows/deploy.yml`) that deploys directly to an Oracle Cloud Free Tier Ubuntu instance.
+This repository includes a fully automated CI/CD pipeline (`.github/workflows/ci.yml`) that deploys directly to an Oracle Cloud Free Tier Ubuntu instance.
 
 ### One-Time Server Setup
 1. SSH into your Oracle Ubuntu instance.
