@@ -23,6 +23,7 @@ const envSchema = z
       .default('false')
       .transform((v) => v === 'true'),
     SLACK_WEBHOOK_URL: z.string().optional(),
+    SLACK_SIGNING_SECRET: z.string().optional(),
   })
   .refine(
     (data) => {

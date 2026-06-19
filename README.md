@@ -83,6 +83,18 @@ The bot features an interactive Telegram interface to control the algorithm on t
 
 ---
 
+## Slack Interactive Slash Commands
+
+The algorithm also supports interactive two-way communication directly from Slack via Slash Commands. 
+
+### Setup
+1. Create slash commands in your Slack App (e.g., `/status`, `/positions`, `/invest`, `/help` or a single `/algo` command as a router).
+2. Point their Request URL to `http://<your-vm-ip>:<port>/slack/commands`.
+3. Add the following to your `.env` file:
+   - `SLACK_SIGNING_SECRET`: Your Slack application's **Signing Secret** (found in **Basic Information** -> **App Credentials**). This is used to cryptographically verify incoming requests are from Slack. If omitted, signature verification is skipped with a warning.
+
+---
+
 ## Oracle Cloud Free Tier Deployment (Automated)
 
 This repository includes a fully automated CI/CD pipeline (`.github/workflows/ci.yml`) that deploys directly to an Oracle Cloud Free Tier Ubuntu instance.
