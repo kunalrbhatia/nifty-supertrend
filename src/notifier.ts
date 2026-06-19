@@ -57,4 +57,3 @@ export async function notify(message: string): Promise<void> {
 export async function sendNotification(message: string): Promise<void> {
   await notify(message);
 }
-

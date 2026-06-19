@@ -48,44 +48,50 @@ describe('Notifier', () => {
     it('should log error if Telegram axios post fails', async () => {
       mockedAxios.post.mockRejectedValue(new Error('Telegram Fail'));
       await sendTelegram('test message');
-      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Failed to send Telegram notification: Telegram Fail'));
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to send Telegram notification: Telegram Fail')
+      );
     });
 
     it('should log error if Telegram axios post fails with non-Error object', async () => {
       mockedAxios.post.mockRejectedValue('String Error Telegram');
       await sendTelegram('test message');
-      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Failed to send Telegram notification: String Error Telegram'));
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to send Telegram notification: String Error Telegram')
+      );
     });
   });
-
 
   describe('Slack Notification', () => {
     it('should send slack notification via axios', async () => {
       mockedAxios.post.mockResolvedValue({ data: { ok: true } });
       await sendSlack('slack message');
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        'test_webhook_url',
-        { text: 'slack message' }
-      );
+      expect(mockedAxios.post).toHaveBeenCalledWith('test_webhook_url', { text: 'slack message' });
     });
 
     it('should log error if slack webhook URL is not configured', async () => {
       mutableConfig.SLACK_WEBHOOK_URL = '';
       await sendSlack('slack message');
       expect(mockedAxios.post).not.toHaveBeenCalled();
-      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Slack webhook URL is not configured'));
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Slack webhook URL is not configured')
+      );
     });
 
     it('should log error if Slack axios post fails', async () => {
       mockedAxios.post.mockRejectedValue(new Error('Slack Fail'));
       await sendSlack('slack message');
-      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Failed to send Slack notification: Slack Fail'));
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to send Slack notification: Slack Fail')
+      );
     });
 
     it('should handle non-Error catch block values', async () => {
       mockedAxios.post.mockRejectedValue('String Error');
       await sendSlack('slack message');
-      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Failed to send Slack notification: String Error'));
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to send Slack notification: String Error')
+      );
     });
   });
 
@@ -113,10 +119,9 @@ describe('Notifier', () => {
       await notify('slack fallback message');
 
       expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        'test_webhook_url',
-        { text: 'slack fallback message' }
-      );
+      expect(mockedAxios.post).toHaveBeenCalledWith('test_webhook_url', {
+        text: 'slack fallback message',
+      });
     });
 
     it('should log info and not post if both Telegram and Slack are disabled', async () => {
@@ -132,5 +137,3 @@ describe('Notifier', () => {
     });
   });
 });
-
-
