@@ -30,7 +30,7 @@ api.interceptors.request.use((req) => {
   req.headers['User-Agent'] =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
-  if (jwtToken) {
+  if (jwtToken && req.url !== API_URLS.LOGIN) {
     req.headers['Authorization'] = `Bearer ${jwtToken}`;
   }
 
@@ -42,8 +42,9 @@ api.interceptors.response.use(
   async (response) => {
     const originalRequest = response.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    if (response.data && response.data.status === false) {
-      const errorCode = response.data.errorcode;
+    const data = response.data;
+    if (data && (data.status === false || data.success === false)) {
+      const errorCode = data.errorcode || data.errorCode;
 
       // AG8001 is "Invalid Token" or "Token Expired"
       if (
@@ -72,8 +73,8 @@ api.interceptors.response.use(
         }
       }
 
-      logger.error(`API Error: ${response.data.message} (Code: ${errorCode})`);
-      throw new Error(response.data.message);
+      logger.error(`API Error: ${data.message} (Code: ${errorCode})`);
+      throw new Error(data.message);
     }
     return response;
   },
