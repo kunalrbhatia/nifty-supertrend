@@ -41,4 +41,20 @@ else
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Daily maintenance and instance initialization failed with exit code $STATUS." >> logs/maintenance.log
 fi
 
+# --- Clean up logs to prevent server storage overload ---
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running daily log rotation and cleanup..." >> logs/maintenance.log
+
+# 1. Delete any log files in logs/ older than 30 days
+find logs/ -name "*.log" -type f -mtime +30 -delete >> logs/maintenance.log 2>&1
+
+# 2. Prevent maintenance.log from growing indefinitely (truncate if > 5MB)
+if [ -f "logs/maintenance.log" ]; then
+    find logs/ -name "maintenance.log" -type f -size +5M -exec truncate -s 0 {} \;
+fi
+
+# 3. Prevent PM2 logs from growing indefinitely (truncate if > 10MB)
+find logs/ -name "pm2-*.log" -type f -size +10M -exec truncate -s 0 {} \;
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Log cleanup completed." >> logs/maintenance.log
+
 exit $STATUS
