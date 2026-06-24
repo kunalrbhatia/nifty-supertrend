@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v3
         with:
@@ -39,3 +41,14 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Verify README is updated
+        run: pnpm check-readme
+
+      - name: Verify PR Description format
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr view ${{ github.event.pull_request.number }} --json body --template '{{.body}}' > pr_body.md
+          pnpm check-pr-description pr_body.md
