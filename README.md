@@ -167,4 +167,7 @@ This project strictly enforces code quality and conventional standards.
 2. **Conventional Commits**: You must use `pnpm commit` (Commitizen) to generate your commits. Formats like `feat: added logs` or `fix: parsed LTP` are enforced. **No Emojis allowed.**
 3. **Branch Naming**: All branches must follow the `type/description` pattern (e.g., `feat/add-timeframe`, `fix/api-headers`).
 4. **100% Test Coverage**: The CI pipeline will fail if business logic test coverage drops below 100% (or the configured threshold).
-5. **Pre-commit Hooks**: Husky is configured to run `pnpm verify` (Typecheck -> Lint -> Test -> Build) before every commit. Broken code cannot be committed locally.
+5. **Verification Hooks**: 
+   - **README Check**: Husky verifies that `README.md` is updated whenever core code files are staged.
+   - **PR Description Check**: A workflow checks that all file paths and commands in the PR description are properly wrapped in backticks (`` ` ``).
+   - **PR Checks Monitor**: Developers can run `pnpm check-pr-status` to block and monitor pull request status until all checks complete and resolve.

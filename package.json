@@ -20,6 +20,7 @@
     "pr-status": "gh pr checks --watch",
     "check-readme": "node .agents/skills/readme-auto-update/scripts/check-readme.cjs",
     "check-pr-description": "node .agents/skills/pr-description-check/scripts/verify.cjs",
+    "check-pr-status": "node .agents/skills/verify-pr-status/scripts/verify-checks.cjs",
     "update-scrip": "tsx src/scripts/updateScripMaster.ts",
     "init-algo": "tsx src/scripts/initAlgo.ts",
     "maintenance": "tsx src/scripts/maintenance.ts",
