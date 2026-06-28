@@ -6,16 +6,16 @@ A robust, fully automated carry-forward trading bot that accumulates `NIFTYBEES`
 
 This bot implements a highly disciplined **Accumulation & Profit-Protected Exit** strategy. It operates entirely on closed daily candles (by running just before the market closes at 03:26 PM IST) to eliminate intraday noise.
 
-### 1. The Indicator (Nifty 50 Momentum)
-Instead of looking at the ETF itself, the bot calculates the **SuperTrend (10, 3)** directly on the **Nifty 50 Spot Index**. This ensures that trading decisions are based on the pure macroeconomic momentum, not individual security volatility.
+### 1. The Indicator (Index Momentum)
+Instead of looking at the ETF itself, the bot calculates the **SuperTrend (10, 3)** directly on the **Nifty 50 Spot Index** or **Nifty Bank Spot Index** (depending on what index is configured). This ensures that trading decisions are based on the pure macroeconomic momentum, not individual security volatility.
 
 ### 2. Accumulation (Averaging)
-Every time the Nifty 50 SuperTrend flips from **🔴 Red to 🟢 Green** (a Buy Signal), the bot automatically invests a fixed tranche of capital (default: ₹10,000) into `NIFTYBEES` (the Nifty 50 ETF). 
+Every time the tracked Index SuperTrend flips from **🔴 Red to 🟢 Green** (a Buy Signal), the bot automatically invests a fixed tranche of capital (default: ₹10,000) into the corresponding ETF (`NIFTYBEES` or `BANKBEES`). 
 - If multiple Buy signals occur over months without a profitable exit, the bot will continue to average down or average up indefinitely.
 - The investment amount can be changed dynamically via Telegram using `/invest <amount>`.
 
 ### 3. Profit-Protected Exit
-When the Nifty 50 SuperTrend flips from **🟢 Green to 🔴 Red** (a Sell Signal), the bot evaluates the overall health of your accumulated `NIFTYBEES` position:
+When the tracked Index SuperTrend flips from **🟢 Green to 🔴 Red** (a Sell Signal), the bot evaluates the overall health of your accumulated ETF position:
 - **Condition Met:** If the entire accumulated position is sitting at a **Minimum 1.0% Profit**, the bot will square off (sell) the entire quantity and reset its ledger.
 - **Condition Failed (Carry Forward):** If the position is in a loss or less than 1% profit, the bot ignores the sell signal. It will carry the position forward and wait for the next momentum cycle to close profitably.
 
@@ -71,11 +71,12 @@ The bot features an interactive Telegram interface to control the algorithm on t
 
 | Command | Action |
 | :--- | :--- |
-| `/status`, `/check`, `/pnl` | Returns the current Nifty 50 ST status, NiftyBees LTP, Avg Price, and live P&L. |
-| `/positions` | Shows detailed breakdown of current holdings and total P&L. |
+| `/status`, `/check`, `/pnl` | Returns the current Index ST status, ETF LTP, Avg Price, and live P&L. |
+| `/positions` | Shows detailed breakdown of current holdings and total P&L for the active ETF. |
+| `/index <nifty\|banknifty>` | View or change the active index (switches between Nifty 50 and Nifty Bank). |
 | `/timeframe <val>` | Changes the SuperTrend calculation interval (e.g., `/timeframe 1h`, `/timeframe 1d`). |
 | `/invest <amt>` | Updates the ₹ tranche size invested per Buy signal (e.g., `/invest 20000`). |
-| `/force_invest` | Manually trigger a buy order for 1 tranche of NIFTYBEES instantly. |
+| `/force_invest` | Manually trigger a buy order for 1 tranche of the active ETF instantly. |
 | `/paper` | Toggles between LIVE and PAPER trading modes instantly. |
 | `/update` | Manually forces a refresh of the Angel One Scrip Master JSON. |
 | `/logs` | Fetches the last 20-25 lines of logs (Supports both PM2 and File fallback). |
