@@ -70,8 +70,8 @@ describe('stScanner Job', () => {
 
     await runStScanner();
 
-    expect(orders.placeOrder).toHaveBeenCalledWith('BUY', 40);
-    expect(addBuySpy).toHaveBeenCalledWith(40, 250);
+    expect(orders.placeOrder).toHaveBeenCalledWith('BUY', 40, 'NIFTYBEES-EQ', '10576');
+    expect(addBuySpy).toHaveBeenCalledWith(40, 250, 'nifty');
     expect(notifier.sendNotification).toHaveBeenCalledWith(
       expect.stringContaining('BUY SIGNAL (Nifty 50)')
     );
@@ -97,8 +97,8 @@ describe('stScanner Job', () => {
 
     await runStScanner();
 
-    expect(orders.placeOrder).toHaveBeenCalledWith('SELL', 40);
-    expect(clearSpy).toHaveBeenCalled();
+    expect(orders.placeOrder).toHaveBeenCalledWith('SELL', 40, 'NIFTYBEES-EQ', '10576');
+    expect(clearSpy).toHaveBeenCalledWith('nifty');
     expect(notifier.sendNotification).toHaveBeenCalledWith(
       expect.stringContaining('SELL SIGNAL (EXIT) - Nifty 50')
     );

@@ -1,6 +1,6 @@
 import { getCandles, getLtp } from '../helpers/marketData.js';
 import { calculateSuperTrend } from '../helpers/supertrend.js';
-import { CONSTANTS, TIMEFRAMES } from '../helpers/constants.js';
+import { CONSTANTS, INDEX_MAP, TIMEFRAMES } from '../helpers/constants.js';
 import holdingStore from '../store/holdingStore.js';
 import configStore from '../store/configStore.js';
 import { placeOrder } from '../helpers/orders.js';
@@ -15,8 +15,10 @@ export async function runStScanner(): Promise<void> {
   const timeframe = configStore.getTimeframe();
   const userFriendlyTimeframe =
     Object.keys(TIMEFRAMES).find((key) => TIMEFRAMES[key] === timeframe) || timeframe;
+  const currentIndex = configStore.getIndex();
+  const indexDetails = INDEX_MAP[currentIndex];
 
-  logger.info(`Starting daily ST scan (${userFriendlyTimeframe})...`);
+  logger.info(`Starting daily ST scan for ${indexDetails.name} (${userFriendlyTimeframe})...`);
 
   // 1. Holiday check
   const isMarketOpen = await isTradingDay();
@@ -24,46 +26,50 @@ export async function runStScanner(): Promise<void> {
 
   try {
     // 2. Fetch market data
-    // Fetch Nifty 50 candles for indicator
-    const n50Candles = await getCandles(CONSTANTS.NIFTY50_TOKEN, CONSTANTS.EXCHANGE, timeframe);
-    if (n50Candles.length < 20) {
-      logger.error(`Insufficient candle data for Nifty 50 ST calculation (${timeframe})`);
+    // Fetch index candles for indicator
+    const candles = await getCandles(indexDetails.indexToken, CONSTANTS.EXCHANGE, timeframe);
+    if (candles.length < 20) {
+      logger.error(
+        `Insufficient candle data for ${indexDetails.name} ST calculation (${timeframe})`
+      );
       return;
     }
 
-    // Fetch NiftyBees LTP for execution/MTM
-    const beesLtp = await getLtp(CONSTANTS.NIFTYBEES_TOKEN, CONSTANTS.EXCHANGE);
+    // Fetch ETF LTP for execution/MTM
+    const etfLtp = await getLtp(indexDetails.etfToken, CONSTANTS.EXCHANGE);
 
-    // 3. Calculate SuperTrend on Nifty 50
-    const stResults = calculateSuperTrend(n50Candles);
+    // 3. Calculate SuperTrend on index
+    const stResults = calculateSuperTrend(candles);
     const prevST = stResults[stResults.length - 2];
     const currST = stResults[stResults.length - 1];
 
     logger.info(
-      `ST (Nifty 50) Status: Prev=${prevST.trend}, Curr=${currST.trend} | TF: ${userFriendlyTimeframe} | Bees LTP: ${beesLtp}`
+      `ST (${indexDetails.name}) Status: Prev=${prevST.trend}, Curr=${currST.trend} | TF: ${userFriendlyTimeframe} | ETF LTP: ${etfLtp}`
     );
 
     // 4. Signal Detection
-    const holdings = holdingStore.get();
+    const holdings = holdingStore.get(currentIndex);
 
     // BUY SIGNAL: Red -> Green
     if (prevST.trend === 'DOWN' && currST.trend === 'UP') {
       const investmentAmt = configStore.getInvestmentAmount();
-      const qty = Math.floor(investmentAmt / beesLtp);
+      const qty = Math.floor(investmentAmt / etfLtp);
 
       if (qty > 0) {
-        logger.info(`🟢 BUY SIGNAL (N50). Investing ₹${investmentAmt} in NIFTYBEES (Qty: ${qty})`);
-        await placeOrder('BUY', qty);
-        holdingStore.addBuy(qty, beesLtp);
+        logger.info(
+          `🟢 BUY SIGNAL (${indexDetails.name}). Investing ₹${investmentAmt} in ${indexDetails.etfSymbol} (Qty: ${qty})`
+        );
+        await placeOrder('BUY', qty, indexDetails.etfSymbol, indexDetails.etfToken);
+        holdingStore.addBuy(qty, etfLtp, currentIndex);
 
-        const newHoldings = holdingStore.get();
+        const newHoldings = holdingStore.get(currentIndex);
         await sendNotification(
-          `🟢 *BUY SIGNAL (Nifty 50)*\nAsset: NIFTYBEES\nPrice: ₹${beesLtp}\nQty: ${qty}\nNew Avg: ₹${newHoldings.averagePrice.toFixed(2)}\nTotal Qty: ${newHoldings.totalQuantity}`
+          `🟢 *BUY SIGNAL (${indexDetails.name})*\nAsset: ${indexDetails.etfName}\nPrice: ₹${etfLtp}\nQty: ${qty}\nNew Avg: ₹${newHoldings.averagePrice.toFixed(2)}\nTotal Qty: ${newHoldings.totalQuantity}`
         );
       } else {
-        logger.info(`🟢 BUY SIGNAL (N50) but Qty is 0. No trade.`);
+        logger.info(`🟢 BUY SIGNAL (${indexDetails.name}) but Qty is 0. No trade.`);
         await sendNotification(
-          `🟢 *TREND SWITCH: UP (Nifty 50)*\nPrice: ₹${beesLtp}\nNo trade: Insufficient funds or Qty is 0.`
+          `🟢 *TREND SWITCH: UP (${indexDetails.name})*\nPrice: ₹${etfLtp}\nNo trade: Insufficient funds or Qty is 0.`
         );
       }
     }
@@ -71,34 +77,39 @@ export async function runStScanner(): Promise<void> {
     // SELL SIGNAL: Green -> Red
     else if (prevST.trend === 'UP' && currST.trend === 'DOWN') {
       if (holdings.totalQuantity > 0) {
-        const profitPct = ((beesLtp - holdings.averagePrice) / holdings.averagePrice) * 100;
+        const profitPct = ((etfLtp - holdings.averagePrice) / holdings.averagePrice) * 100;
 
         if (profitPct >= CONSTANTS.MIN_PROFIT_PERCENT) {
           logger.info(
-            `🔴 SELL SIGNAL (N50). Profit ${profitPct.toFixed(2)}% >= ${CONSTANTS.MIN_PROFIT_PERCENT}%. Squaring off.`
+            `🔴 SELL SIGNAL (${indexDetails.name}). Profit ${profitPct.toFixed(2)}% >= ${CONSTANTS.MIN_PROFIT_PERCENT}%. Squaring off.`
           );
-          await placeOrder('SELL', holdings.totalQuantity);
-          holdingStore.clear();
+          await placeOrder(
+            'SELL',
+            holdings.totalQuantity,
+            indexDetails.etfSymbol,
+            indexDetails.etfToken
+          );
+          holdingStore.clear(currentIndex);
 
           await sendNotification(
-            `🔴 *SELL SIGNAL (EXIT) - Nifty 50*\nAsset: NIFTYBEES\nPrice: ₹${beesLtp}\nAvg: ₹${holdings.averagePrice.toFixed(2)}\nP&L: +${profitPct.toFixed(2)}%\nSquare-off complete!`
+            `🔴 *SELL SIGNAL (EXIT) - ${indexDetails.name}*\nAsset: ${indexDetails.etfName}\nPrice: ₹${etfLtp}\nAvg: ₹${holdings.averagePrice.toFixed(2)}\nP&L: +${profitPct.toFixed(2)}%\nSquare-off complete!`
           );
         } else {
           logger.info(
-            `🟡 SELL SIGNAL (N50) but Profit ${profitPct.toFixed(2)}% < ${CONSTANTS.MIN_PROFIT_PERCENT}%. Holding position.`
+            `🟡 SELL SIGNAL (${indexDetails.name}) but Profit ${profitPct.toFixed(2)}% < ${CONSTANTS.MIN_PROFIT_PERCENT}%. Holding position.`
           );
           await sendNotification(
-            `🟡 *SELL SIGNAL (HOLD) - Nifty 50*\nAsset: NIFTYBEES\nPrice: ₹${beesLtp}\nAvg: ₹${holdings.averagePrice.toFixed(2)}\nP&L: ${profitPct.toFixed(2)}%\nProfit < 1%, carrying forward.`
+            `🟡 *SELL SIGNAL (HOLD) - ${indexDetails.name}*\nAsset: ${indexDetails.etfName}\nPrice: ₹${etfLtp}\nAvg: ₹${holdings.averagePrice.toFixed(2)}\nP&L: ${profitPct.toFixed(2)}%\nProfit < 1%, carrying forward.`
           );
         }
       } else {
-        logger.info('Nifty 50 ST turned RED but no active holdings to sell.');
+        logger.info(`${indexDetails.name} ST turned RED but no active holdings to sell.`);
         await sendNotification(
-          `🔴 *TREND SWITCH: DOWN (Nifty 50)*\nPrice: ₹${beesLtp}\nNo active holdings to sell.`
+          `🔴 *TREND SWITCH: DOWN (${indexDetails.name})*\nPrice: ₹${etfLtp}\nNo active holdings to sell.`
         );
       }
     } else {
-      logger.info(`Nifty 50 Trend remains ${currST.trend}. No action taken.`);
+      logger.info(`${indexDetails.name} Trend remains ${currST.trend}. No action taken.`);
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

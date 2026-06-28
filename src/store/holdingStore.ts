@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import logger from '../helpers/logger.js';
+import configStore from './configStore.js';
 
 export interface HoldingTrade {
   date: string;
@@ -16,6 +17,11 @@ export interface HoldingState {
   trades: HoldingTrade[];
 }
 
+export interface MultiHoldingState {
+  nifty: HoldingState;
+  banknifty: HoldingState;
+}
+
 const HOLDINGS_FILE = path.join(process.cwd(), 'data/holdings.json');
 
 const initialState: HoldingState = {
@@ -27,22 +33,37 @@ const initialState: HoldingState = {
 };
 
 class HoldingStore {
-  private state: HoldingState;
+  private state: MultiHoldingState;
 
   constructor() {
     this.state = this.load();
   }
 
-  private load(): HoldingState {
+  private load(): MultiHoldingState {
     try {
       if (fs.existsSync(HOLDINGS_FILE)) {
         const data = fs.readFileSync(HOLDINGS_FILE, 'utf-8');
-        return JSON.parse(data);
+        const parsed = JSON.parse(data);
+        if (parsed.nifty || parsed.banknifty) {
+          return {
+            nifty: parsed.nifty || { ...initialState },
+            banknifty: parsed.banknifty || { ...initialState },
+          };
+        } else {
+          // Migrate old single holding format
+          return {
+            nifty: parsed,
+            banknifty: { ...initialState },
+          };
+        }
       }
     } catch (error) {
       logger.error('Error loading holdings:', error);
     }
-    return { ...initialState };
+    return {
+      nifty: { ...initialState },
+      banknifty: { ...initialState },
+    };
   }
 
   private save(): void {
@@ -57,16 +78,18 @@ class HoldingStore {
     }
   }
 
-  get(): HoldingState {
-    return { ...this.state };
+  get(index?: 'nifty' | 'banknifty'): HoldingState {
+    const idx = index || configStore.getIndex();
+    return { ...this.state[idx] };
   }
 
-  addBuy(qty: number, price: number): void {
-    this.state.totalInvestment += qty * price;
-    this.state.totalQuantity += qty;
-    this.state.averagePrice = this.state.totalInvestment / this.state.totalQuantity;
-    this.state.lastSignal = 'BUY';
-    this.state.trades.push({
+  addBuy(qty: number, price: number, index?: 'nifty' | 'banknifty'): void {
+    const idx = index || configStore.getIndex();
+    this.state[idx].totalInvestment += qty * price;
+    this.state[idx].totalQuantity += qty;
+    this.state[idx].averagePrice = this.state[idx].totalInvestment / this.state[idx].totalQuantity;
+    this.state[idx].lastSignal = 'BUY';
+    this.state[idx].trades.push({
       date: new Date().toISOString().split('T')[0],
       qty,
       price,
@@ -74,13 +97,17 @@ class HoldingStore {
     this.save();
   }
 
-  clear(): void {
-    this.state = { ...initialState, lastSignal: 'SELL' };
+  clear(index?: 'nifty' | 'banknifty'): void {
+    const idx = index || configStore.getIndex();
+    this.state[idx] = { ...initialState, lastSignal: 'SELL' };
     this.save();
   }
 
   reset(): void {
-    this.state = { ...initialState };
+    this.state = {
+      nifty: { ...initialState },
+      banknifty: { ...initialState },
+    };
     if (fs.existsSync(HOLDINGS_FILE)) {
       fs.unlinkSync(HOLDINGS_FILE);
     }
