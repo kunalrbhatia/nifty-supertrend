@@ -33,6 +33,7 @@ describe('StatusCommand', () => {
       trades: [],
     });
     jest.spyOn(configStore, 'getTimeframe').mockReturnValue('ONE_DAY');
+    jest.spyOn(configStore, 'getIndex').mockReturnValue('nifty');
     jest.spyOn(marketData, 'getLtp').mockResolvedValue(260);
     jest
       .spyOn(marketData, 'getCandles')

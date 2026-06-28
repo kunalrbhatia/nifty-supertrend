@@ -32,7 +32,9 @@ describe('PositionsCommand', () => {
 
     await positionsHandler(mockCtx as unknown as Context);
 
-    expect(mockCtx.replyWithMarkdown).toHaveBeenCalledWith('📭 *No active positions.*');
+    expect(mockCtx.replyWithMarkdown).toHaveBeenCalledWith(
+      '📭 *No active positions for NIFTYBEES.*'
+    );
   });
 
   it('should reply with positions and P&L when holdings exist', async () => {

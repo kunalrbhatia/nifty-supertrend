@@ -1,7 +1,8 @@
 import { login } from '../helpers/login.js';
 import { getLtp } from '../helpers/marketData.js';
-import { CONSTANTS } from '../helpers/constants.js';
+import { CONSTANTS, INDEX_MAP } from '../helpers/constants.js';
 import logger from '../helpers/logger.js';
+import configStore from '../store/configStore.js';
 
 /**
  * Independent script to initialize the algo:
@@ -17,16 +18,19 @@ async function initAlgo() {
     logger.info('Performing login to SmartAPI...');
     await login();
 
-    // 2. Health Check: Fetch LTP for Nifty 50 and NIFTYBEES
+    // 2. Health Check: Fetch LTP for configured index and ETF
     logger.info('Performing health check (LTP fetch)...');
 
-    // Fetch Nifty 50 LTP
-    const n50Ltp = await getLtp(CONSTANTS.NIFTY50_TOKEN, CONSTANTS.EXCHANGE);
-    logger.info(`Nifty 50 LTP: ₹${n50Ltp}`);
+    const currentIndex = configStore.getIndex();
+    const indexDetails = INDEX_MAP[currentIndex];
 
-    // Fetch NIFTYBEES LTP
-    const beesLtp = await getLtp(CONSTANTS.NIFTYBEES_TOKEN, CONSTANTS.EXCHANGE);
-    logger.info(`NIFTYBEES LTP: ₹${beesLtp}`);
+    // Fetch Index LTP
+    const indexLtp = await getLtp(indexDetails.indexToken, CONSTANTS.EXCHANGE);
+    logger.info(`${indexDetails.name} LTP: ₹${indexLtp}`);
+
+    // Fetch ETF LTP
+    const etfLtp = await getLtp(indexDetails.etfToken, CONSTANTS.EXCHANGE);
+    logger.info(`${indexDetails.etfName} LTP: ₹${etfLtp}`);
 
     logger.info('✅ Algo initialization successful. Connection and Session verified.');
   } catch (error) {

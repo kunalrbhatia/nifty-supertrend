@@ -37,4 +37,13 @@ describe('ConfigStore', () => {
     const data = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
     expect(data.timeframe).toBe('ONE_HOUR');
   });
+
+  it('should get and set index correctly', () => {
+    expect(configStore.getIndex()).toBe('nifty');
+    configStore.setIndex('banknifty');
+    expect(configStore.getIndex()).toBe('banknifty');
+
+    const data = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+    expect(data.index).toBe('banknifty');
+  });
 });

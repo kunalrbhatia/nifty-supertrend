@@ -6,6 +6,7 @@ import { CONSTANTS } from '../helpers/constants.js';
 export interface AppConfig {
   investmentAmount: number;
   timeframe: string;
+  index: 'nifty' | 'banknifty';
 }
 
 const CONFIG_FILE = path.join(process.cwd(), 'data/config.json');
@@ -13,6 +14,7 @@ const CONFIG_FILE = path.join(process.cwd(), 'data/config.json');
 const initialConfig: AppConfig = {
   investmentAmount: CONSTANTS.DEFAULT_INVESTMENT,
   timeframe: CONSTANTS.INTERVAL_DAILY,
+  index: 'nifty',
 };
 
 class ConfigStore {
@@ -65,6 +67,15 @@ class ConfigStore {
 
   setTimeframe(timeframe: string): void {
     this.config.timeframe = timeframe;
+    this.save();
+  }
+
+  getIndex(): 'nifty' | 'banknifty' {
+    return this.config.index || 'nifty';
+  }
+
+  setIndex(index: 'nifty' | 'banknifty'): void {
+    this.config.index = index;
     this.save();
   }
 
